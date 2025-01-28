@@ -1,0 +1,42 @@
+.notifications-container {
+    position: relative;
+  }
+  
+  .notifications-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #2c3e50;
+  }
+  
+  .notifications-dropdown {
+    position: absolute;
+    top: 2.5rem;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 250px;
+    z-index: 1000;
+  }
+  
+  .notifications-dropdown ul {
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+  }
+  
+  .notifications-dropdown li {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    color: #2c3e50;
+    cursor: pointer;
+  }
+  
+  .notifications-dropdown li:last-child {
+    border-bottom: none;
+  }
+  

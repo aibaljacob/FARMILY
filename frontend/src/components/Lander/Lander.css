@@ -1,0 +1,39 @@
+.landing-header {
+    background-image: url("../../assets/images/jack.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 680px;
+  }
+  
+  .blur{
+    background-color: rgba(0, 0, 0, 0.596);
+    height: 100%;
+    width: 100%;
+    padding: 3rem 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+ .landing-content{
+  padding-top: 140px;
+ }
+
+  .landing-content h1 {
+    color: white;
+    text-align: center;
+    margin: 0 0 1rem;
+    font-size: 2.5rem;
+  }
+  
+  .landing-content p {
+    color: white;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem;
+  }
+  
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  

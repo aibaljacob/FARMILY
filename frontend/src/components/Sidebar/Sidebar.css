@@ -1,0 +1,63 @@
+/* Sidebar Styles */
+.sidebar {
+  background: linear-gradient(to bottom, #d4edda, #b5dfb8); /* Light green gradient */
+  transition: all 0.3s ease;
+}
+
+.sidebar .ant-menu-dark {
+  background: transparent; /* Keep menu background transparent to match the sidebar */
+}
+
+.sidebar .ant-menu-item a{
+  color: #2d6a4f; /* Darker green for text */
+  transition: all 0.3s ease;
+  font-size: 17px;
+}
+
+.sidebar .ant-menu-item a:hover{
+  color: #2d6a4f; /* Darker green for text */
+}
+
+.sidebar .ant-menu-item:hover {
+  background-color: #95c79c !important; /* Slightly darker green on hover */
+  color: #ffffff !important;
+}
+
+.logx{
+  color:#e74c3c !important;
+}
+
+.sidebar .ant-menu-item-selected{
+  background-color: #6ebf77 !important; /* Highlighted green for selected items */
+  color: white !important;
+}
+
+.ant-menu-inline .ant-menu-item::after{
+  border-right:3px solid #206523 !important;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  bottom: 3rem;
+  left: 3rem;
+  background: #95c79c; /* Light green for toggle button */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background: #6ebf77; /* Darker green on hover */
+}
+
+.logout-link {
+  color: #e74c3c; /* Keep the logout link red for emphasis */
+  font-weight: bold;
+}
+.logout-link:hover {
+  background-color: #c0392b;
+  color: white;
+}

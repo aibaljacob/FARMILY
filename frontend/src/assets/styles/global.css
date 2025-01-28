@@ -1,0 +1,41 @@
+
+
+
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6{
+  color: white;
+}
+
+/* Base typography */
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+a{
+  text-decoration: none !important;
+  color: black;
+}
+
+a:hover{
+  color: darkgreen;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.text-center {
+  text-align: center;
+}
+

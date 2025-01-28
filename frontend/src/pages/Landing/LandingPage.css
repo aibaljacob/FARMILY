@@ -1,0 +1,251 @@
+/* Base Styles */
+.farmily-landing {
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Navigation */
+.farmily-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.farmily-logo {
+  background-image: url("../../assets/images/FARMILYLOGO.png");
+  background-size: 170px;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 150px;
+  height: 30px;
+}
+
+.farmily-nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.farmily-nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Hero Section */
+.farmily-hero {
+  background: linear-gradient(rgba(255, 255, 255, 0.452), rgb(255, 255, 255)),
+              url('../../assets/images/jack.jpg') center/cover;
+  min-height: 100vh;
+  display: flex;
+  padding-top: 80px;
+  align-items: center;
+  padding: 0 5%;
+}
+
+.farmily-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.farmily-hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  color: #2e7d32;
+}
+
+.farmily-hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #666;
+}
+
+.farmily-hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Buttons */
+.farmily-btn-primary {
+  background: #2e7d32;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.farmily-btn-primary:hover {
+  background: #1b5e20;
+}
+
+.farmily-btn-secondary {
+  background: transparent;
+  color: #2e7d32;
+  padding: 0.8rem 1.5rem;
+  border: 2px solid #2e7d32;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.farmily-btn-secondary:hover {
+  background: #2e7d32;
+  color: white;
+}
+
+/* Sections */
+.farmily-section {
+  padding: 5rem 5%;
+  min-height: 50vh;
+}
+
+.farmily-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #2e7d32;
+}
+
+/* Steps */
+.farmily-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.farmily-step {
+  text-align: center;
+  padding: 2rem;
+}
+
+.farmily-step-number {
+  width: 40px;
+  height: 40px;
+  background: #2e7d32;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-weight: 600;
+}
+
+/* Features */
+.farmily-features {
+  background: #f9f9f9;
+}
+
+.farmily-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.farmily-feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.farmily-feature-card:hover {
+  transform: translateY(-5px);
+}
+
+/* CTA Section */
+.farmily-cta {
+  text-align: center;
+  padding: 5rem 5%;
+  background: #2e7d32;
+  color: white;
+}
+
+.farmily-cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.farmily-cta .farmily-btn-primary {
+  background: white;
+  color: #2e7d32;
+  margin-top: 2rem;
+}
+
+.farmily-cta .farmily-btn-primary:hover {
+  background: #f0f0f0;
+}
+
+/* Footer */
+.farmily-footer {
+  background: #1b5e20;
+  color: white;
+  padding: 4rem 5% 2rem;
+}
+
+.farmily-footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.farmily-footer-section h4 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.farmily-footer-section a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.farmily-footer-bottom {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .farmily-nav {
+    padding: 1rem 5%;
+  }
+  
+  .farmily-nav-links {
+    display: none; /* You might want to implement a mobile menu */
+  }
+  
+  .farmily-hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .farmily-section {
+    padding: 3rem 5%;
+  }
+}
