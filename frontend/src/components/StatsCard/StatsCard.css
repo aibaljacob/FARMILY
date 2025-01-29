@@ -1,29 +1,39 @@
 .stats-card {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .stats-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .stats-icon {
-    font-size: 2rem;
-    color: #007bff;
-  }
-  
-  .stats-info h3 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-  
-  .stats-info p {
-    margin: 0;
-    color: #ffffff;
-  }
-  
+  background: #f6ffed !important; /* Light green background */
+  border-radius: 12px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.stats-card-content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+.stats-icon {
+  font-size: 2.5rem !important;
+  color: #52c41a !important; /* Vibrant green */
+}
+
+.stats-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.2rem !important;
+}
+
+.stats-info h3 {
+  margin: 0 !important;
+  color: #237804 !important; /* Darker green for contrast */
+}
+
+.stats-info p {
+  margin: 0 !important;
+  color: #595959 !important; /* Neutral gray */
+  font-size: 0.95rem !important;
+}

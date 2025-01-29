@@ -1,3 +1,21 @@
+/* Importing Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apply Inter font to the whole page */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Optional: You can set it specifically for certain elements if needed */
+h1, h2, h3, h4, p, a {
+  font-family: 'Inter', sans-serif;
+}
+
+
 /* Base Styles */
 .farmily-landing {
   font-family: 'Inter', sans-serif;
@@ -11,13 +29,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 5%;
-  background: white;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.95);
+  /* Smoother shadow */
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
 }
 
 .farmily-logo {
@@ -39,17 +59,40 @@
   text-decoration: none;
   color: #333;
   font-weight: 500;
+  position: relative;
 }
+
+.farmily-nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #2e7d32;
+  transition: width 0.3s ease;
+}
+
+.farmily-nav-links a:hover::after {
+  width: 100%;
+}
+
 
 /* Hero Section */
 .farmily-hero {
-  background: linear-gradient(rgba(255, 255, 255, 0.452), rgb(255, 255, 255)),
-              url('../../assets/images/jack.jpg') center/cover;
   min-height: 100vh;
   display: flex;
   padding-top: 80px;
   align-items: center;
   padding: 0 5%;
+  /* Improve gradient */
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.59), 
+    rgba(255, 255, 255, 0.85)
+  ),
+  url('../../assets/images/jack.jpg') center/cover;
+  /* Add subtle animation */
+  animation: fadeIn 1s ease-out;
 }
 
 .farmily-hero-content {
@@ -63,6 +106,9 @@
   font-size: 3.5rem;
   margin-bottom: 1.5rem;
   color: #2e7d32;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Improve font weight */
+  font-weight: 800;
 }
 
 .farmily-hero-content p {
@@ -87,10 +133,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+  transition: all 0.3s ease;
 }
 
 .farmily-btn-primary:hover {
   background: #1b5e20;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 .farmily-btn-secondary {
@@ -101,12 +151,19 @@
   border-radius: 5px;
   font-weight: 600;
   cursor: pointer;
+  /* Add subtle hover animation */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.3s ease;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
   transition: all 0.3s ease;
+  height: 48px;
 }
 
 .farmily-btn-secondary:hover {
   background: #2e7d32;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 /* Sections */
@@ -120,6 +177,11 @@
   font-size: 2.5rem;
   margin-bottom: 3rem;
   color: #2e7d32;
+    /* Add subtle gradient */
+    background: linear-gradient(45deg, #2e7d32, #388e3c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
 }
 
 /* Steps */
@@ -147,6 +209,16 @@
   justify-content: center;
   margin: 0 auto 1rem;
   font-weight: 600;
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+  /* Add subtle rotation on hover */
+  transition: transform 0.3s ease;
+}
+
+.farmily-step:hover .farmily-step-number {
+  transform: rotate(10deg);
 }
 
 /* Features */
@@ -166,12 +238,15 @@
   background: white;
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  /* Add smooth transition */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .farmily-feature-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 /* CTA Section */
@@ -222,6 +297,12 @@
   color: white;
   text-decoration: none;
   margin-bottom: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.farmily-footer-section a:hover{
+  color: white;
+  font-size: 15px;
 }
 
 .farmily-footer-bottom {
@@ -248,4 +329,20 @@
   .farmily-section {
     padding: 3rem 5%;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add to relevant sections */
+.farmily-hero-content, .farmily-features-grid {
+  animation: fadeIn 1s ease-out;
 }

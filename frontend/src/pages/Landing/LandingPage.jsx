@@ -76,7 +76,7 @@ const LandingPage = () => {
       <section className="farmily-cta">
         <h2>Join the Agricultural Revolution</h2>
         <p>Start trading directly with farmers and buyers today</p>
-        <button className="farmily-btn-primary">Get Started Now</button>
+        <Link to="/register"><button className="farmily-btn-primary">Get Started Now</button></Link>
       </section>
 
       {/* Footer */}

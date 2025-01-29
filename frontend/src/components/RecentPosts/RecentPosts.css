@@ -1,52 +1,22 @@
 .recent-posts {
-    background-color: #c1e4c6;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  .recent-posts h3 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    color: #206523;
-    font-weight: bold;
-  }
-  
-  .recent-posts-cards {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    scrollbar-width: thin;
-    scrollbar-color: #206523 #f8f9fa;
-  }
-  
-  .recent-posts-cards::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .recent-posts-cards::-webkit-scrollbar-thumb {
-    background: #206523;
-    border-radius: 4px;
-  }
-  
-  .post-card {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    min-width: 250px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .post-card p {
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
-    color: #2c3e50;
-  }
-  
-  .post-card strong {
-    color: #206523;
-  }
-  
+  background-color: #f6ffed !important;
+  padding: 1.5rem !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.recent-posts h3 {
+  margin-bottom: 1.5rem !important;
+  font-size: 1.5rem !important;
+  color: #237804 !important;
+  font-weight: bold !important;
+}
+
+.post-card {
+  transition: transform 0.2s ease !important;
+}
+
+.post-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+}

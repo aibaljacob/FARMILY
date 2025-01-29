@@ -1,18 +1,35 @@
 import React from 'react';
+import { Card, Avatar, List, Typography } from 'antd';
+import { EnvironmentOutlined, UserOutlined } from '@ant-design/icons';
 import './NearbyBuyers.css';
+
+const { Text } = Typography;
 
 const NearbyBuyers = ({ buyers }) => {
   return (
     <div className="nearby-buyers">
       <h3>Nearby Buyers</h3>
-      <div className="nearby-buyers-cards">
-        {buyers.map((buyer) => (
-          <div key={buyer.id} className="buyer-card">
-            <p><strong>Name:</strong> {buyer.name}</p>
-            <p><strong>Location:</strong> {buyer.location}</p>
-          </div>
-        ))}
-      </div>
+      <List
+        grid={{ gutter: 16, column: 3 }}
+        dataSource={buyers}
+        renderItem={(buyer) => (
+          <List.Item>
+            <Card hoverable bordered className="buyer-card">
+              <Card.Meta
+                avatar={<Avatar icon={<UserOutlined />} />}
+                title={<Text strong>{buyer.name}</Text>}
+                description={
+                  <div>
+                    <Text type="secondary">
+                      <EnvironmentOutlined /> {buyer.location}
+                    </Text>
+                  </div>
+                }
+              />
+            </Card>
+          </List.Item>
+        )}
+      />
     </div>
   );
 };
