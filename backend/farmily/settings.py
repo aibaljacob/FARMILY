@@ -32,6 +32,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Application definition
 
@@ -64,11 +66,22 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # or use any other email service
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email host
+EMAIL_PORT = 587  # Usually 587 for TLS or 465 for SSL
+EMAIL_USE_TLS = True  # or False depending on the email provider
+EMAIL_USE_SSL = False  # Choose based on your provider
+EMAIL_HOST_USER = 'aibaljacobmani@gmail.com'  # Your email
+EMAIL_HOST_PASSWORD = 'jznx xtou ccfn bqqn'  # Your email password
+DEFAULT_FROM_EMAIL = 'aibaljacobmani@gmail.com'  # Default from address
+
+
 
 
 MIDDLEWARE = [

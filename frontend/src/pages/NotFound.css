@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
+
+.glitchy404-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.glitchy404-container {
+  display: inline-grid;
+  grid-gap: 0 1rem;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+}
+
+.glitchy404-text {
+  color: hsl(0, 0%, calc((100 - var(--light, 95)) * 1%));
+  display: inline-block;
+  position: relative;
+  margin: 0;
+}
+
+.glitchy404-text__char--readable {
+  opacity: 0;
+  position: absolute;
+}
+
+.glitchy404-text__char {
+  color: transparent;
+  position: relative;
+}
+
+.glitchy404-text__char:after {
+  --txt: attr(data-char);
+  animation-duration: 0.2s;
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+  animation-timing-function: steps(1);
+  animation-iteration-count: var(--count);
+  animation-name: glitch404-switch;
+  color: hsl(0, 0%, calc((100 - var(--light, 95)) * 1%));
+  transition: color 0.2s ease 0s;
+  position: absolute;
+  content: var(--txt);
+  left: 0;
+  top: 0;
+}
+
+.glitchy404-code {
+  align-self: end;
+  font-size: 3rem;
+}
+
+.glitchy404-code-message {
+  font-size: 1.5rem;
+}
+
+.glitchy404-return-link {
+  grid-column: span 2;
+  grid-row: -1;
+  text-align: center;
+  margin: 2rem auto;
+  color: hsl(0, 0%, calc((100 - var(--light)) * 1%));
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.glitchy404-bear-logo {
+  grid-row: span 2;
+  position: relative;
+  max-width: 400px;
+  object-fit: contain;
+  height: 6rem;
+  width: 6rem;
+}
+
+/* Bear logo styles */
+.glitchy404-bear__shades {
+  opacity: var(--bear-shades);
+}
+
+.glitchy404-bear__tear-stream {
+  fill: hsla(200, 100%, 75%, var(--bear-tears, 0));
+}
+
+.glitchy404-bear__brows {
+  stroke: hsla(0, 0%, 0%, var(--bear-brows, 0));
+}
+
+.glitchy404-bear__eye {
+  fill: hsla(0, 0%, 0%, var(--bear-eyes, 0));
+}
+
+.glitchy404-bear-logo--tears {
+  --bear-shades: 0;
+  --bear-brows: 1;
+  --bear-tears: 0.75;
+  --bear-eyes: 1;
+  --scaleX: -50;
+  --scaleY: -50;
+}
+
+.glitchy404-bear-logo--tears path,
+.glitchy404-bear-logo--tears circle,
+.glitchy404-bear-logo--tears ellipse {
+  transition: fill 0.2s ease 0s, transform 0.2s ease 0s;
+}
+
+.glitchy404-return-link:hover ~ .glitchy404-bear-logo--tears {
+  --bear-brows: 0;
+  --bear-tears: 0;
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+  .glitchy404-bear-logo {
+    height: 12rem;
+    width: 12rem;
+  }
+  
+  .glitchy404-code {
+    font-size: 6rem;
+  }
+  
+  .glitchy404-code-message {
+    font-size: 3rem;
+  }
+}
+
+/* Animation */
+@keyframes glitch404-switch {
+  0% { content: var(--char-0); }
+  10% { content: var(--char-1); }
+  20% { content: var(--char-2); }
+  30% { content: var(--char-3); }
+  40% { content: var(--char-4); }
+  50% { content: var(--char-5); }
+  60% { content: var(--char-6); }
+  70% { content: var(--char-7); }
+  80% { content: var(--char-8); }
+  90% { content: var(--char-9); }
+  100% { content: var(--char-0); }
+}

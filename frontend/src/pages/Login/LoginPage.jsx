@@ -5,28 +5,81 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import classNames from 'classnames';
 
 export const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({ email: '', password: '' });
   const [serverError, setServerError] = useState('');
+  const [showResend, setShowResend] = useState(false);
+
+  const resendVerificationEmail = async () => {
+    try {
+        const response = await axios.post('http://127.0.0.1:8000/api/resend-verification-email/', { email });
+        alert(response.data.message);  // Notify the user
+    } catch (error) {
+        console.error("Resend email error:", error.response?.data);
+        alert("Failed to resend verification email. Try again.");
+    }
+};
+
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
   
+    // Required field check
     if (!value.trim()) {
       setErrors((prev) => ({
         ...prev,
         [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is required.`,
       }));
+      document.getElementById(name).classList.add('invalid');
+      document.getElementById(name).classList.remove('valid');
     } else {
-      setErrors((prev) => ({ ...prev, [name]: '' })); // Clear the error if valid
+      // Handle specific field validations
+      if (name === 'email') {
+        const emailRegex = /^(?!.*\.\.)[a-zA-Z][a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9]@(?!(?:[.-])|.*[.-]{2})[a-zA-Z][a-zA-Z0-9-]{0,62}(\.[a-zA-Z0-9-]{1,63})*\.(com|net|org|edu|gov|io|co|info|biz|me|us|uk|ca|au|in)$/;
+        if (!emailRegex.test(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            [name]: 'Please enter a valid email address.',
+          }));
+          document.getElementById(name).classList.add('invalid');
+          document.getElementById(name).classList.remove('valid');
+        } else {
+          setErrors((prev) => ({ ...prev, [name]: '' }));
+          document.getElementById(name).classList.remove('invalid');
+          document.getElementById(name).classList.add('valid');
+        }
+      }
+  
+      if (name === 'password') {
+        if (value.length < 6) {
+          setErrors((prev) => ({
+            ...prev,
+            [name]: 'Password must be at least 6 characters long.',
+          }));
+          document.getElementById(name).classList.add('invalid');
+          document.getElementById(name).classList.remove('valid');
+        } else {
+          setErrors((prev) => ({ ...prev, [name]: '' }));
+          document.getElementById(name).classList.remove('invalid');
+          document.getElementById(name).classList.add('valid');
+        }
+      }
+  
+      // If it's any other valid field (non-email, non-password)
+      if (name !== 'email' && name !== 'password') {
+        setErrors((prev) => ({ ...prev, [name]: '' }));
+        document.getElementById(name).classList.remove('invalid');
+        document.getElementById(name).classList.add('valid');
+      }
     }
   };
+  
   
 
   const handleChange = (e) => {
@@ -37,23 +90,51 @@ export const LoginPage = () => {
       const newErrors = { ...prev };
   
       if (name === 'email') {
-        const emailRegex = /^(?=[^@]*[a-zA-Z]{3,})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emailRegex = /^(?!.*\.\.)[a-zA-Z][a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9]@(?!(?:[.-])|.*[.-]{2})[a-zA-Z][a-zA-Z0-9-]{0,62}(\.[a-zA-Z0-9-]{1,63})*\.(com|net|org|edu|gov|io|co|info|biz|me|us|uk|ca|au|in)$/;
         if (!emailRegex.test(value)) {
-          setErrors((prev) => ({ ...prev, email: 'Email must have at least 3 alphabets before "@" and be valid.' }));
+          newErrors.email = 'Use a valid email format';
         } else {
-          setErrors((prev) => ({ ...prev, email: '' }));
+          newErrors.email = '';
         }
       }
-      
-      
   
       if (name === 'password') {
-        newErrors.password = value.length >= 6 ? '' : 'Password must be at least 6 characters long.';
+        const password = value;
+        const errors = [];
+      
+        // Check for minimum length (8 characters)
+        if (password.length < 8) {
+          errors.push('Password must be at least 8 characters long.');
+        }
+      
+        // Check for at least one uppercase letter
+        if (!/[A-Z]/.test(password)) {
+          errors.push('Password must contain at least one uppercase letter.');
+        }
+      
+        // Check for at least one lowercase letter
+        if (!/[a-z]/.test(password)) {
+          errors.push('Password must contain at least one lowercase letter.');
+        }
+      
+        // Check for at least one digit
+        if (!/\d/.test(password)) {
+          errors.push('Password must contain at least one digit.');
+        }
+      
+        // Check for at least one special character
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          errors.push('Password must contain at least one special character.');
+        }
+      
+        // Join errors with line breaks to display each on a new line
+        newErrors.password = errors.length > 0 ? errors.join('') : ''; 
       }
-  
+
       return newErrors;
     });
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -61,7 +142,7 @@ export const LoginPage = () => {
     setServerError('');
 
     // Final validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]*(?=(.*[a-zA-Z]){3,})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^(?!.*\.\.)[a-zA-Z][a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9]@(?!(?:[.-])|.*[.-]{2})[a-zA-Z][a-zA-Z0-9-]{0,62}(\.[a-zA-Z0-9-]{1,63})*\.(com|net|org|edu|gov|io|co|info|biz|me|us|uk|ca|au|in)$/;
     if (!emailRegex.test(formData.email)) {
       setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address.' }));
       return;
@@ -77,7 +158,7 @@ export const LoginPage = () => {
         password: formData.password,
       });
   
-      const { access, refresh, user_type } = response.data;
+      const { access, refresh, user } = response.data;
   
       // Store tokens in localStorage
       localStorage.setItem('access_token', access);
@@ -86,15 +167,17 @@ export const LoginPage = () => {
       // Show success toast and redirect user
       toast.success("Login successful!");
       console.log("Logged in:", response.data);
-      localStorage.setItem('user_type', user_type);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      
   
       // Redirect based on user type
-    if (user_type === 'farmer') {
-      window.location.href = '/farmer'; // Redirect to farmer dashboard
-    } else if (user_type === 'buyer') {
-      window.location.href = '/buyer-dashboard'; // Redirect to buyer dashboard
+    if (user.role === 1) {
+      window.location.href = '/farmer';
+    } else if (user.role === 2) {
+      window.location.href = '/buyer-dashboard'; 
     } else {
-      window.location.href = '/admin-dashboard'; // Redirect to admin dashboard
+      window.location.href = '/admin-dashboard'; 
     }
     } catch (error) {
       console.error(error.response?.data || error.message);
@@ -103,6 +186,7 @@ export const LoginPage = () => {
       if (error.response?.data?.detail) {
         setServerError(error.response.data.detail);
         toast.error(error.response.data.detail);
+        setShowResend(true);  // Enable the resend button
       } else if (error.response?.data?.non_field_errors) {
         setServerError(error.response.data.non_field_errors.join(", "));
         toast.error(error.response.data.non_field_errors.join(", "));
@@ -111,6 +195,18 @@ export const LoginPage = () => {
         toast.error('Something went wrong!');
       }
     }
+
+    try {
+      const response = await axios.post('/api/login', { email, password });
+      console.log("Login successful:", response.data);
+      // Redirect or do something after successful login
+  } catch (error) {
+      console.error("Login error:", error.response?.data);
+
+      if (error.response?.data?.message === "Email not verified") {
+          setShowResend(true);  // Enable the resend button
+      }
+  }
   };
 
   return (
@@ -133,6 +229,10 @@ export const LoginPage = () => {
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
+              className={classNames({
+                invalid: errors.email,
+                valid: !errors.email && formData.email,
+              })}
             />
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
@@ -147,6 +247,10 @@ export const LoginPage = () => {
               value={formData.password}
               onChange={handleChange}
               onBlur={handleBlur}
+              className={classNames({
+                invalid: errors.password,
+                valid: !errors.password && formData.password,
+              })}
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
@@ -155,8 +259,15 @@ export const LoginPage = () => {
 
           <button type="submit" className="farmily-auth-button">Sign In</button>
         </form>
+        
 
         <div className="farmily-auth-footer">
+        {showResend && (
+    <button onClick={resendVerificationEmail} className="farmily-auth-button">
+        Resend Verification Email
+    </button>
+)}
+          <br /><br /><Link to="/forgot-password" className="farmily-auth-link">Forgot Password?</Link>
           <p>Don't have an account?</p>
           <Link to="/register" className="farmily-auth-link">Create an Account</Link>
         </div>
@@ -208,9 +319,9 @@ export const RegisterPage = () => {
         const newErrors = { ...errors };
   
         if (name === 'email') {
-          const emailRegex = /^(?=[^@]*[a-zA-Z]{3,})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          const emailRegex = /^(?!.*\.\.)[a-zA-Z][a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9]@(?!(?:[.-])|.*[.-]{2})[a-zA-Z][a-zA-Z0-9-]{0,62}(\.[a-zA-Z0-9-]{1,63})*\.(com|net|org|edu|gov|io|co|info|biz|me|us|uk|ca|au|in)$/;
           if (!emailRegex.test(value)) {
-            setErrors((prev) => ({ ...prev, email: 'Email must have at least 3 alphabets before "@" and be valid.' }));
+            setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address.' }));
           } else {
             setErrors((prev) => ({ ...prev, email: '' }));
           }
@@ -227,7 +338,36 @@ export const RegisterPage = () => {
         }
   
         if (name === 'password') {
-          newErrors.password = value.length >= 6 ? '' : 'Password must be at least 6 characters long.';
+          const password = value;
+          const errors = [];
+        
+          // Check for minimum length (8 characters)
+          if (password.length < 8) {
+            errors.push('Password must be at least 8 characters long.');
+          }
+        
+          // Check for at least one uppercase letter
+          if (!/[A-Z]/.test(password)) {
+            errors.push('Password must contain at least one uppercase letter.');
+          }
+        
+          // Check for at least one lowercase letter
+          if (!/[a-z]/.test(password)) {
+            errors.push('Password must contain at least one lowercase letter.');
+          }
+        
+          // Check for at least one digit
+          if (!/\d/.test(password)) {
+            errors.push('Password must contain at least one digit.');
+          }
+        
+          // Check for at least one special character
+          if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            errors.push('Password must contain at least one special character.');
+          }
+        
+          // Join errors with line breaks to display each on a new line
+          newErrors.password = errors.length > 0 ? errors.join('') : ''; 
         }
   
         if (name === 'confirmPassword' || name === 'password') {
@@ -253,7 +393,7 @@ export const RegisterPage = () => {
       setErrors((prev) => ({ ...prev, lastName: 'Last name is required.' }));
       return;
     }
-    const emailRegex = /^[a-zA-Z0-9._%+-]*(?=(.*[a-zA-Z]){3,})[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^(?!.*\.\.)[a-zA-Z][a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9]@(?!(?:[.-])|.*[.-]{2})[a-zA-Z][a-zA-Z0-9-]{0,62}(\.[a-zA-Z0-9-]{1,63})*\.(com|net|org|edu|gov|io|co|info|biz|me|us|uk|ca|au|in)$/;
     if (!emailRegex.test(formData.email)) {
       setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address.' }));
       return;
@@ -269,16 +409,13 @@ export const RegisterPage = () => {
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/users/register/', {
-        username: `${formData.firstName} ${formData.lastName}`,  // Full name as username
         email: formData.email,
         password: formData.password,
         password2: formData.confirmPassword,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        is_farmer: formData.userType === 'farmer',
-        is_buyer: formData.userType === 'buyer',
+        role: formData.userType === 'farmer' ? 1 : 2,  // Set role based on userType
         is_active: true,  // Set default active status
-        is_staff: false,  // Assume regular users are not staff
         is_superuser: false,  // Regular users are not superusers
       });
       toast.success("Registration successful! Redirecting to login...");
@@ -318,6 +455,10 @@ export const RegisterPage = () => {
         value={formData.firstName}
         onChange={handleChange}
         onBlur={handleBlur}
+        className={classNames({
+          invalid: errors.firstName,
+          valid: !errors.firstName && formData.firstName,
+        })}
         />
         {errors.firstName && <span className="error-message">{errors.firstName}</span>}
         </div>
@@ -332,6 +473,10 @@ export const RegisterPage = () => {
     value={formData.lastName}
     onChange={handleChange}
     onBlur={handleBlur}
+    className={classNames({
+      invalid: errors.lastName,
+      valid: !errors.lastName && formData.lastName,
+    })}
   />
   {errors.lastName && <span className="error-message">{errors.lastName}</span>}
 </div>
@@ -347,6 +492,10 @@ export const RegisterPage = () => {
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
+              className={classNames({
+                invalid: errors.email,
+                valid: !errors.email && formData.email,
+              })}
             />
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
@@ -361,6 +510,10 @@ export const RegisterPage = () => {
               value={formData.password}
               onChange={handleChange}
               onBlur={handleBlur}
+              className={classNames({
+                invalid: errors.password,
+                valid: !errors.password && formData.password,
+              })}
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
@@ -375,6 +528,10 @@ export const RegisterPage = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               onBlur={handleBlur}
+              className={classNames({
+                invalid: errors.confirmPassword,
+                valid: !errors.confirmPassword && formData.confirmPassword,
+              })}
             />
             {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
           </div>

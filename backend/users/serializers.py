@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User,FarmerProfile
 from django.contrib.auth.password_validation import validate_password
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'is_farmer', 'is_buyer')
+        fields = ('email', 'password', 'password2', 'first_name', 'last_name', 'role')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -20,12 +20,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
+        role = validated_data.get('role', 1)
         user = User.objects.create(
-            username=validated_data['username'],
             email=validated_data['email'],
-            is_farmer=validated_data['is_farmer'],
-            is_buyer=validated_data['is_buyer']
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            role=role,
         )
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+class FarmerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FarmerProfile
+        fields = '__all__'  # Or list specific fields you need

@@ -4,11 +4,11 @@ import { Avatar, Dropdown, Menu, Space, Badge } from 'antd';
 import { BellOutlined, UserOutlined, DownOutlined } from '@ant-design/icons';
 import './Header.css';
 
-const Header = ({ userName }) => {
+const Header = ({ userName,onNavigate }) => {
   const menu = (
     <Menu className="pmenu" style={{ width:"200px",display:"flex",flexDirection:"column",alignItems:"center",borderRadius:"30px",marginTop:"30px" }}>
-      <Menu.Item key="profile" >
-        <Link to="/profile">Profile</Link>
+      <Menu.Item key="profile" onClick={() => onNavigate('5')}>
+        <Link to="#">Profile</Link>
       </Menu.Item>
       <Menu.Item key="logout">
         <Link to="/logout">Logout</Link>

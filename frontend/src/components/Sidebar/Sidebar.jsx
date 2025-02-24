@@ -10,11 +10,10 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import './Sidebar.css';
-import { red } from '@mui/material/colors';
 
 const { Sider } = Layout;
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({onNavigate, isOpen, toggleSidebar }) => {
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -57,20 +56,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               marginTop:'100px'
             }}
           >
-            <Menu.Item key="1" icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard">Overview</Link>
+            <Menu.Item key="1" icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('1')}>
+              <Link to="#">Overview</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/products">Products</Link>
+            <Menu.Item key="2" icon={<ShopOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('2')}>
+              <Link to="#">Products</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UsergroupAddOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/buyers">Buyers</Link>
+            <Menu.Item key="3" icon={<UsergroupAddOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('3')}>
+              <Link to="#">Buyers</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/deals">Deals</Link>
+            <Menu.Item key="4" icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('4')}>
+              <Link to="#">Deals</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/profile">Profile</Link>
+            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('5')}>
+              <Link to="#">Profile</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>
               <Link to="/logout" className='logx'>Logout</Link>

@@ -1,5 +1,3 @@
-
-
 const routes = {
     landing: '/',
     register: '/register',

@@ -113,8 +113,8 @@
   
   .farmily-auth-footer {
     text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-top: 5px;
+    padding-top: 0.5rem;
     border-top: 1px solid #eee;
   }
   
@@ -195,4 +195,120 @@
   background-position: center;
   width: 200px;
   height: 50px;
+}
+
+/* Adding smooth transitions and animations */
+.farmily-form-group input[type="text"],
+.farmily-form-group input[type="email"],
+.farmily-form-group input[type="password"] {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+/* When input is focused, make it more interactive */
+.farmily-form-group input:focus {
+  outline: none;
+  transform: scale(1.05);  /* Slightly enlarge input on focus */
+}
+
+/* Apply shake animation for invalid inputs */
+.farmily-form-group input.invalid {
+  animation: shake 0.3s ease-in-out;
+  border-color: #e63946;
+}
+
+.farmily-form-group input.valid{
+  border-color: #2e7d32;
+}
+
+/* Shake animation for invalid inputs */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Animation for error messages */
+.error-message {
+  color: #e63946; /* A nice red color for errors */
+  font-size: 0.9rem; /* Slightly smaller than normal text */
+  margin-top: 5px; /* Add some spacing between the input and the error */
+  display: block; /* Ensures it stays on its own line */
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Fading animation for error messages */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply a smooth fade-out effect when error messages are cleared */
+.error-message.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+/* Fade-out animation */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+/* For server errors, keep them visually distinct */
+.server-error {
+  color: #e63946;
+  background-color: #ffe5e5; /* Light red background for visibility */
+  padding: 10px;
+  border: 1px solid #e63946;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out; /* Fade-in animation for server error */
+}
+
+/* Add a pulse effect for the submit button on hover */
+.farmily-auth-button:hover {
+  background: #1b5e20;
+  animation: pulse 0.6s ease-out;
+}
+
+/* Pulse effect for the button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
