@@ -13,7 +13,7 @@ import './Sidebar.css';
 
 const { Sider } = Layout;
 
-const Sidebar = ({onNavigate, isOpen, toggleSidebar }) => {
+const Sidebar = ({onNavigate, isOpen, toggleSidebar, role }) => {
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>

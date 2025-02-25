@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 import ProfilesPage from '../../components/Profiles/Profiles'
 import ProfileManager from '../../components/Profiles/ProfileManager';
 import Overview from '../../components/Overview/Overview';
+import FarmerProductsPage from '../../components/Products/Products';
+import BuyerDemandsPage from '../../components/Demands/Demands';
+import DealsHistoryPage from '../../components/Deals/Deals';
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -51,7 +54,10 @@ const Dashboard = () => {
       <div className="dashboard-content">
         <div className="filler"></div>
         {activePage === '1' && <Overview />}
-        {activePage === '5' && <ProfileManager firstName={user?.first_name} lastName={user?.last_name} userid={user?.id}/>}
+        {activePage === '2' && <FarmerProductsPage />}
+        {activePage === '3' && <BuyerDemandsPage />}
+        {activePage === '4' && <DealsHistoryPage />}
+        {activePage === '5' && <ProfileManager firstName={user?.first_name} lastName={user?.last_name} userid={user?.id} role={user?.role}/>}
       </div>
     </div>
   );

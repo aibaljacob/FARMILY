@@ -26,7 +26,6 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
     if (selectedState) {
       const state = states.find((s) => s.name === selectedState);
       setCities(state ? state.cities : []);
-      setFormData({ ...formData, state: state });
     }
   }, [selectedState]);
 
@@ -41,8 +40,8 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
         const state = states.find((s) => s.name === selectedState);
         setCities(state ? state.cities : []);
         const city = cities.find((c) => c.name === selectedCity);
-        setFormData({ ...formData, city:city });
-        console.log(formData.city)
+        setFormData({ ...formData, state: selectedState });
+        setFormData({ ...formData, city:selectedCity });
       }
     },[selectedCity] );
 

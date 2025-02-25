@@ -46,3 +46,37 @@ class FarmerProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.city}"
+    
+class Product(models.Model):
+    CATEGORY_CHOICES = [
+        ('rubber', 'Rubber'),
+        ('coconut', 'Coconut'),
+        ('jackfruit', 'Jackfruit'),
+        ('banana', 'Banana'),
+        ('pepper', 'Black Pepper'),
+        ('cardamom', 'Cardamom'),
+        ('tea', 'Tea'),
+        ('coffee', 'Coffee'),
+        ('arecanut', 'Arecanut'),
+        ('cashew', 'Cashew'),
+        ('ginger', 'Ginger'),
+        ('turmeric', 'Turmeric'),
+        ('nutmeg', 'Nutmeg'),
+        ('clove', 'Clove'),
+        ('tapioca', 'Tapioca'),
+        ('mango', 'Mango'),
+        ('pineapple', 'Pineapple'),
+        ('others', 'Others'),  # For products not listed above
+    ]
+
+    name = models.CharField(max_length=255)  # Added name field
+    description = models.TextField(null=True, blank=True)
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    farmer = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_farmer': True})
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.get_category_display()} - {self.price}"

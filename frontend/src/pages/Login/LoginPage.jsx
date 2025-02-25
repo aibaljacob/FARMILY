@@ -418,7 +418,7 @@ export const RegisterPage = () => {
         is_active: true,  // Set default active status
         is_superuser: false,  // Regular users are not superusers
       });
-      toast.success("Registration successful! Redirecting to login...");
+      toast.success("Verification email has been sent! Redirecting to login...");
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);

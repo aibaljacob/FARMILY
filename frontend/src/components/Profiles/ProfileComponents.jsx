@@ -124,21 +124,11 @@ const ProfileUpdate = ({ firstName, lastName, userid,can,onSuccess,setMode }) =>
   const handleSubmit = async (formData) => {
     setLoading(true);
     const token = localStorage.getItem('access_token');
-    const getFilenameFromUrl = (url) => {
-      return url.substring(url.lastIndexOf("/") + 1); // Extract filename
-    };
-    const urlToFile = async (url) => {
-      const filename = getFilenameFromUrl(url); // Extract filename from URL
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const ext = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-      const fileType = `image/${ext}`;
-      return new File([blob], filename, { type: fileType });
-    };
-    if (typeof formData.profilepic === "string" && formData.profilepic.startsWith("/media/")) { 
-      formData.profilepic = await urlToFile(formData.profilepic); 
-    }
-    console.log(formData)
+    Object.keys(formData).forEach((key) => {
+      if (profileData[key] === formData[key]) {
+          delete formData[key];
+      }
+    });
     try {
       await axios.put('http://127.0.0.1:8000/api/farmer-profile/', formData, {
         headers: {

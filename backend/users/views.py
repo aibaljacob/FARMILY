@@ -3,6 +3,7 @@
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 import requests
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from rest_framework import status
@@ -18,12 +19,15 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.conf import settings
 from .utils import send_verification_email
 from django.core.cache import cache
 import random
 from rest_framework.decorators import api_view
+from .serializers import ProductSerializer
+from .models import Product
 
 User = get_user_model()
 
@@ -289,3 +293,38 @@ def verify_otp(request):
     cache.delete(cache_key)
     
     return Response({'message': 'Phone number verified successfully'})
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])  # Requires authentication
+def product_list_create(request):
+    if request.method == 'GET':  # Handle GET request
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':  # Handle POST request
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(farmer=request.user)  # Assign logged-in user as farmer
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])  
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)  # ✅ Prevents 500 error
+
+    if request.method == 'GET':
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        product.delete()
+        return Response({"message": "Product deleted"}, status=status.HTTP_204_NO_CONTENT)

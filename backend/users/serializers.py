@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User,FarmerProfile
+from .models import Product
 from django.contrib.auth.password_validation import validate_password
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -35,3 +36,8 @@ class FarmerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FarmerProfile
         fields = '__all__'  # Or list specific fields you need
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'category', 'price', 'description', 'is_active']
