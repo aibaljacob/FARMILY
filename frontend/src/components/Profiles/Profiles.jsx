@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { Avatar, Card } from "antd";
 import axios from 'axios';
-import "./Profiles.css"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import countriesData from "./countries.json";

@@ -4,7 +4,7 @@ import { Avatar, Dropdown, Menu, Space, Badge } from 'antd';
 import { BellOutlined, UserOutlined, DownOutlined } from '@ant-design/icons';
 import './Header.css';
 
-const Header = ({ userName,onNavigate }) => {
+const Header = ({ userName,onNavigate,pfp }) => {
   const menu = (
     <Menu className="pmenu" style={{ width:"200px",display:"flex",flexDirection:"column",alignItems:"center",borderRadius:"30px",marginTop:"30px" }}>
       <Menu.Item key="profile" onClick={() => onNavigate('5')}>
@@ -27,7 +27,7 @@ const Header = ({ userName,onNavigate }) => {
             <Avatar
               size="large"
               icon={<UserOutlined />}
-              src="https://via.placeholder.com/40" // Replace with actual profile picture URL
+              src={`http://127.0.0.1:8000${pfp}`} // Replace with actual profile picture URL
             />
             <span className="user-name">{userName || 'User'}</span>
             <DownOutlined />

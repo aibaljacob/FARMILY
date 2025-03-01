@@ -10,9 +10,11 @@ import Overview from '../../components/Overview/Overview';
 import FarmerProductsPage from '../../components/Products/Products';
 import BuyerDemandsPage from '../../components/Demands/Demands';
 import DealsHistoryPage from '../../components/Deals/Deals';
+import { useUser } from './UserContext';
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const profile = useUser();
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const [activePage, setActivePage] = useState('1');
   
@@ -49,7 +51,7 @@ const Dashboard = () => {
 
   return (
     <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-      <Header userName={username} onNavigate={handleNavigation} />
+      <Header userName={username} onNavigate={handleNavigation} pfp={profile.profilepic}/>
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} onNavigate={handleNavigation} />
       <div className="dashboard-content">
         <div className="filler"></div>
