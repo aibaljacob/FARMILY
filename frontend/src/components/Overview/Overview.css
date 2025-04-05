@@ -3,6 +3,10 @@
     gap: 1rem;
     margin-bottom: 2rem;
   }
+
+  .ant-layout{
+    min-height: 1vh !important;
+  }
   
   .stats-card {
     background: #206523;
@@ -30,6 +34,7 @@
   }
   
   .overview-section {
+    padding: 24px !important;
     display: flex;
     flex-direction: column;
     gap: 2rem;

@@ -20,8 +20,12 @@ import {
   EnvironmentOutlined,
   ShoppingCartOutlined,
   CheckCircleOutlined,
-  MessageOutlined
+  MessageOutlined,
+  DollarOutlined,
+  FileTextOutlined,
+  FilterOutlined
 } from '@ant-design/icons';
+import './Demands.css';
 
 const { TabPane } = Tabs;
 
@@ -157,84 +161,97 @@ const BuyerDemandsPage = () => {
     return (
       <Card 
         key={demand.id} 
-        className="mb-6 overflow-hidden shadow hover:shadow-md transition-shadow duration-300"
-        bordered={false}
+        className="demand-card"
+        bordered={true}
       >
         <div className="flex flex-col md:flex-row">
           {/* Left side - Buyer info */}
-          <div className="md:w-1/4 p-4 bg-gray-50 border-r border-gray-200">
+          <div className="md:w-1/4 buyer-info-section">
             <div className="flex flex-col items-center text-center">
-              <Avatar 
-                size={64} 
-                icon={<UserOutlined />} 
-                src={demand.buyer.image} 
-                className="mb-2"
-              />
-              <h3 className="text-lg font-medium">{demand.buyer.name}</h3>
+              <Badge.Ribbon text={demand.buyer.type} color="#52c41a">
+                <Avatar 
+                  size={80} 
+                  icon={<UserOutlined />} 
+                  src={demand.buyer.image} 
+                  className="buyer-avatar"
+                />
+              </Badge.Ribbon>
+              <h3 className="buyer-name">{demand.buyer.name}</h3>
               <Rate disabled defaultValue={demand.buyer.rating} className="text-sm mb-1" />
-              <p className="text-gray-500 text-sm">{demand.buyer.type}</p>
-              <p className="flex items-center justify-center text-sm text-gray-600 mt-2">
+              
+              <div className="location-text">
                 <EnvironmentOutlined className="mr-1" />
                 {demand.buyer.location}
-              </p>
-              <Divider className="my-3" />
-              <div className="mt-2 w-full">
-                <Button 
-                  type="primary" 
-                  icon={<MessageOutlined />} 
-                  block
-                  className="bg-green-600 hover:bg-green-700 mb-2"
-                >
-                  Contact Buyer
-                </Button>
               </div>
+              
+              <Divider className="section-divider" />
+              
+              <Button 
+                type="primary" 
+                icon={<MessageOutlined />} 
+                block
+                className="contact-btn"
+              >
+                Contact Buyer
+              </Button>
             </div>
           </div>
 
           {/* Right side - Demand details */}
-          <div className="md:w-3/4 p-4">
+          <div className="md:w-3/4 demand-details-section">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-xl font-semibold mb-2">{demand.title}</h2>
-                <div className="flex items-center text-gray-500 text-sm mb-3">
+                <h2 className="demand-title">{demand.title}</h2>
+                <div className="demand-meta">
                   <ClockCircleOutlined className="mr-1" />
                   <span>Posted {demand.postedAt}</span>
                   <Divider type="vertical" />
                   <span>Deadline: {demand.deadline}</span>
                 </div>
               </div>
-              <Tag color={demand.status === 'Open' ? 'green' : 'default'}>
+              <Tag 
+                className={`status-tag ${demand.status === 'Open' ? 'status-open' : 'status-closed'}`}
+              >
                 {demand.status}
               </Tag>
             </div>
 
-            <Divider className="my-3" />
+            <Divider className="section-divider" />
             
-            <h3 className="font-medium mb-2">Requested Products</h3>
+            <h3 className="section-title">
+              <ShoppingCartOutlined style={{ marginRight: '8px' }} />
+              Requested Products
+            </h3>
             <Table 
               dataSource={demand.products} 
               columns={productColumns} 
               pagination={false}
               size="small"
-              className="mb-4"
+              className="product-table"
               rowKey="name"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
-                <h3 className="font-medium mb-1">Price Range</h3>
-                <p className="text-gray-700">{demand.priceRange}</p>
+                <h3 className="detail-label">
+                  <DollarOutlined style={{ marginRight: '8px' }} />
+                  Price Range
+                </h3>
+                <p className="detail-value">{demand.priceRange}</p>
               </div>
               <div>
-                <h3 className="font-medium mb-1">Requirements</h3>
-                <p className="text-gray-700">{demand.requirements}</p>
+                <h3 className="detail-label">
+                  <FileTextOutlined style={{ marginRight: '8px' }} />
+                  Requirements
+                </h3>
+                <p className="detail-value">{demand.requirements}</p>
               </div>
             </div>
 
             <div className="mt-4 flex justify-end">
               <Button 
                 type="primary" 
-                className="bg-blue-600 hover:bg-blue-700"
+                className="make-offer-btn"
               >
                 Make Offer
               </Button>
@@ -246,64 +263,34 @@ const BuyerDemandsPage = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Buyer Demands</h1>
-        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-          {demands.filter(d => d.status === 'Open').length} Open Demands
-        </span>
+    <div className="demands-container">
+      <div className="demands-header">
+        <h2>
+          <ShoppingCartOutlined style={{ marginRight: '8px' }} />
+          Buyer Demands
+        </h2>
+        <Button icon={<FilterOutlined />}>Filter</Button>
       </div>
-
-      <div className="bg-white rounded-lg shadow mb-6">
-        <Tabs 
-          defaultActiveKey="1" 
-          onChange={setActiveTab}
-          className="px-4 pt-4"
-        >
-          <TabPane tab="All Demands" key="1" />
-          <TabPane tab="Matching My Products" key="2" />
-          <TabPane tab="New Today" key="3" />
-          <TabPane tab="Nearby Buyers" key="4" />
-        </Tabs>
-      </div>
-
-      <div className="flex flex-wrap -mx-2 mb-4">
-        <div className="px-2 mb-3 w-full md:w-1/4">
-          <Button 
-            icon={<ShoppingCartOutlined />} 
-            className="mr-2"
-          >
-            Filter by Product
-          </Button>
-        </div>
-        <div className="px-2 mb-3 w-full md:w-1/4">
-          <Button 
-            icon={<EnvironmentOutlined />} 
-            className="mr-2"
-          >
-            Filter by Location
-          </Button>
-        </div>
-      </div>
-
-      {activeTab === "1" && demands.map(demand => renderDemandCard(demand))}
       
-      {activeTab === "2" && (
-        <Card className="text-center p-8">
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="No matching demands found for your current products."
-          >
-            <Button type="primary" className="bg-green-600 hover:bg-green-700 mt-4">
-              Update My Product Catalog
-            </Button>
-          </Empty>
-        </Card>
-      )}
-      
-      {activeTab === "3" && <div className="text-center p-8">No new demands posted today.</div>}
-      
-      {activeTab === "4" && demands.filter(d => d.buyer.location.includes("WA")).map(demand => renderDemandCard(demand))}
+      <Tabs 
+        activeKey={activeTab} 
+        onChange={setActiveTab}
+        className="tab-container"
+      >
+        <TabPane tab="All Demands" key="1">
+          {demands.length > 0 ? (
+            demands.map(demand => renderDemandCard(demand))
+          ) : (
+            <Empty description="No demands found" />
+          )}
+        </TabPane>
+        <TabPane tab="My Responses" key="2">
+          <Empty description="You haven't responded to any demands yet" />
+        </TabPane>
+        <TabPane tab="Saved" key="3">
+          <Empty description="You haven't saved any demands yet" />
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

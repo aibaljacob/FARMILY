@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Card } from "antd";
 
-const ProfileManager = ({ firstName, lastName, userid }) => {
+const ProfileManager = ({ firstName, lastName, userid, role }) => {
   const [mode, setMode] = useState('loading');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,8 +21,11 @@ const ProfileManager = ({ firstName, lastName, userid }) => {
 
   const fetchProfile = async () => {
     const token = localStorage.getItem('access_token');
+    const profileUrl = role==1
+      ? 'http://127.0.0.1:8000/api/farmer-profile/' 
+      : 'http://127.0.0.1:8000/api/buyer-profile/';
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/farmer-profile/', {
+      const response = await axios.get(profileUrl, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -76,7 +79,9 @@ const ProfileManager = ({ firstName, lastName, userid }) => {
           firstName={firstName}
           lastName={lastName}
           userid={userid}
+          isFarmer={role}
           onSuccess={handleProfileCreated}
+          setMode={setMode}
         />
       )}
 
@@ -92,6 +97,7 @@ const ProfileManager = ({ firstName, lastName, userid }) => {
             setMode={setMode}
             initialData={profileData}
             onSuccess={handleProfileUpdated}
+            isFarmer={role}
             can={<button
                 onClick={() => setMode('view')}
                 variant="outline"

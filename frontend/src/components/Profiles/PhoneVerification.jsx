@@ -61,7 +61,7 @@ const PhoneVerification = ({ phoneno, onPhoneChange, }) => {
         <input
           type="number"
           style={{height:"35px",padding:"0px 10px"}}
-          value={{phoneno}||phoneNumber}
+          value={phoneno?phoneno:phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
           placeholder="Enter phone number"
           disabled={otpSent}

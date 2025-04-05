@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, CameraOutlined } from '@ant-design/icons';
+import './ProfileComponents.css';
 
 const ProfilePictureUpload = ({ onChange, preview, currentImage }) => {
   const fileInputRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   const handleClick = () => {
     fileInputRef.current.click();
@@ -14,37 +16,43 @@ const ProfilePictureUpload = ({ onChange, preview, currentImage }) => {
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="profile-picture-upload-container">
       <input
         type="file"
         name="profilepic"
         ref={fileInputRef}
         onChange={handleImageChange}
         accept="image/*"
-        className="hidden"
+        className="hidden-input"
       />
       
       <div 
         onClick={handleClick}
-        className="cursor-pointer relative group"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        className={`picture-upload-wrapper ${isHovering ? 'hovering' : ''}`}
       >
         {(preview || currentImage) ? (
-          <img
-            src={preview || currentImage}
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover transition-opacity group-hover:opacity-80"
-          />
+          <div className="image-container">
+            <img
+              src={preview || currentImage}
+              alt="Profile"
+              className="profile-image"
+            />
+            <div className={`overlay ${isHovering ? 'active' : ''}`}>
+              <CameraOutlined className="camera-icon" />
+              <span className="change-text">Change Photo</span>
+            </div>
+          </div>
         ) : (
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center transition-colors group-hover:bg-gray-300">
-            <UserOutlined className=" rounded-full object-cover -gray-200"  style={{fontSize:"50px"}}/>
+          <div className="placeholder-container">
+            <UserOutlined className="user-icon" />
+            <div className={`overlay ${isHovering ? 'active' : ''}`}>
+              <CameraOutlined className="camera-icon" />
+              <span className="change-text">Upload Photo</span>
+            </div>
           </div>
         )}
-        
-        <div className="absolute inset-0 flex items-center justify-center rounded-full  bg-opacity-0 group-hover:bg-opacity-20 transition-all">
-          <span className="text-white opacity-0 group-hover:opacity-100">
-            Change
-          </span>
-        </div>
       </div>
     </div>
   );

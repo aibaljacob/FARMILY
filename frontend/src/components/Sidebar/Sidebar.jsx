@@ -8,6 +8,9 @@ import {
   ProjectOutlined,
   UserOutlined,
   LogoutOutlined,
+  TeamOutlined,
+  FileTextOutlined,
+  CommentOutlined,
 } from '@ant-design/icons';
 import './Sidebar.css';
 
@@ -60,18 +63,27 @@ const Sidebar = ({onNavigate, isOpen, toggleSidebar, role }) => {
               <Link to="#">Overview</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<ShopOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('2')}>
-              <Link to="#">Products</Link>
+              <Link to="#">{role==1?"Products":"Demands"}</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UsergroupAddOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('3')}>
-              <Link to="#">Buyers</Link>
-            </Menu.Item>
+            
             <Menu.Item key="4" icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('4')}>
               <Link to="#">Deals</Link>
             </Menu.Item>
+            {role==1 && (
+              <Menu.Item key="6" icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('6')}>
+                <Link to="#">View Buyers</Link>
+              </Menu.Item>
+            )}
+            {role==1 && (
+              <Menu.Item key="7" icon={<FileTextOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('7')}>
+                <Link to="#">View Buyer Demands</Link>
+              </Menu.Item>
+            )}
+            
             <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('5')}>
               <Link to="#">Profile</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>
+            <Menu.Item key="9" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>
               <Link to="/logout" className='logx'>Logout</Link>
             </Menu.Item>
           </Menu>

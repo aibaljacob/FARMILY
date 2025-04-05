@@ -1,0 +1,14 @@
+.chat-modal .ant-modal-body {
+  padding: 0;
+  height: 500px;
+}
+
+.chat-modal .ant-modal-content {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .chat-modal {
+    max-width: 90vw !important;
+  }
+} 

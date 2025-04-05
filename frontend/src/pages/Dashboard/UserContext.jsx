@@ -13,18 +13,17 @@ export const UserProvider = ({ children }) => {
 
       try {
         // Fetch user details
-        const userRes = await fetch("http://127.0.0.1:8000/api/user/", {
+        const userRes = await fetch("http://127.0.0.1:8000/dashboard/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!userRes.ok) throw new Error("Failed to fetch user");
         const userData = await userRes.json();
         setUser(userData);
-
         // Fetch profile (farmer or buyer)
-        const profileUrl = userData.is_farmer
-          ? "http://127.0.0.1:8000/api/farmer/profile/"
-          : "http://127.0.0.1:8000/api/buyer/profile/";
+        const profileUrl = userData.user.role==1
+          ? "http://127.0.0.1:8000/api/farmer-profile/"
+          : "http://127.0.0.1:8000/api/buyer-profile/";
 
         const profileRes = await fetch(profileUrl, {
           headers: { Authorization: `Bearer ${token}` },

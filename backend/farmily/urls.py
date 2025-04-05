@@ -23,8 +23,9 @@ def home(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('api/', include('api.urls')),
-     path('', home, name='home'),
-     path('', include('users.urls')),
-     path('api/users/', include('users.urls')),
+    path('api/', include('api.urls')),
+    path('', home, name='home'),
+    path('', include('users.urls')),
+    path('api/users/', include('users.urls')),
+    path('', include('chat.urls')),  # Include chat app URLs
 ]

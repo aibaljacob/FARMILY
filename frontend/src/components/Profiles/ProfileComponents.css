@@ -1,0 +1,475 @@
+/* Profile View Styles */
+.profile-view-card {
+  margin: 0px 100px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px !important;
+  overflow: hidden;
+  max-width: 1000px;
+  margin: 0 auto;
+  border: none !important;
+}
+
+/* Profile Header Styles */
+.profile-header {
+  display: flex;
+  padding: 24px;
+  position: relative;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  background: linear-gradient(135deg, #f0f5ff, #ffffff);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-avatar-container {
+  position: relative;
+  margin-right: 12px;
+}
+
+.profile-avatar {
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #f0f5ff;
+}
+
+.profile-verification-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-name {
+  margin-bottom: 0 !important;
+  font-weight: 600 !important;
+  font-size: 2rem !important;
+  color: #1a1a1a;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.verification-tag, .role-tag {
+  margin-top: 8px;
+  margin-right: 8px;
+  font-weight: 500;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+/* Profile Content Styles */
+.profile-content {
+  padding: 24px;
+}
+
+.profile-section {
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  color: #2d6a4f;
+}
+
+.section-header h4 {
+  margin: 0 !important;
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+.section-content {
+  background-color: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* About Section */
+.profile-bio {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #595959;
+  margin-bottom: 0;
+}
+
+/* Contact Section */
+.contact-section .section-content {
+  padding: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-icon {
+  font-size: 18px;
+  margin-right: 12px;
+  color: #2d6a4f;
+}
+
+/* Location Section */
+.location-section .section-content {
+  padding: 16px;
+}
+
+.location-info {
+  position: relative;
+}
+
+.address-card, .location-detail-card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: none !important;
+  transition: all 0.3s ease;
+}
+
+.address-card:hover, .location-detail-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.address-title, .detail-title {
+  font-weight: 600;
+  color: #2d6a4f;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.address-content, .detail-content {
+  color: #595959;
+  font-size: 15px;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 24px 24px;
+}
+
+/* Loading State */
+.profile-loading {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px !important;
+}
+
+.profile-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #bfbfbf;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-content {
+    padding: 16px;
+  }
+  
+  .section-content {
+    padding: 12px;
+  }
+  
+  .contact-item {
+    padding: 10px;
+  }
+  
+  .profile-actions {
+    padding: 0 16px 16px;
+  }
+}
+
+/* Profile Form Styles */
+.profile-form-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px !important;
+  overflow: hidden;
+  max-width: 1000px;
+  margin: 0 auto;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.form-header {
+  padding: 24px;
+  background: linear-gradient(135deg, #f0f5ff, #ffffff);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.form-title {
+  margin-bottom: 8px !important;
+  color: #2d6a4f !important;
+  font-weight: 600 !important;
+}
+
+.form-section {
+  padding: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-picture-section {
+  padding-bottom: 24px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-label .anticon {
+  margin-right: 8px;
+  color: #2d6a4f;
+  font-size: 16px;
+}
+
+.profile-picture-upload {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-input,
+.ant-input,
+.ant-select,
+.ant-select-selector {
+  border-radius: 8px !important;
+  /* border: 1px solid #d9d9d9 !important; */
+  box-shadow: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.form-input:hover,
+.ant-input:hover,
+.ant-select:hover .ant-select-selector {
+  border-color: #2d6a4f !important;
+}
+
+.form-input:focus,
+.ant-input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #2d6a4f !important;
+  box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.1) !important;
+}
+
+.input-help-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.section-title h4 {
+  margin: 0 !important;
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+.select-container {
+  position: relative;
+}
+
+.form-select {
+  width: 100%;
+}
+
+.select-arrow {
+  color: #8c8c8c;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px;
+}
+
+.submit-button {
+  background-color: #2d6a4f !important;
+  border-color: #2d6a4f !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+}
+
+.submit-button:hover {
+  background-color: #1e8a55 !important;
+  border-color: #1e8a55 !important;
+}
+
+@media (max-width: 768px) {
+  .form-section {
+    padding: 16px;
+  }
+  
+  .profile-picture-upload {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .section-label {
+    margin-bottom: 8px;
+  }
+}
+
+/* Profile Picture Upload Styles */
+.profile-picture-upload-container {
+  position: relative;
+  display: inline-block;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.picture-upload-wrapper {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.picture-upload-wrapper.hovering {
+  transform: scale(1.02);
+}
+
+.image-container, .placeholder-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.image-container:hover, .placeholder-container:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
+  color: white;
+  gap: 8px;
+}
+
+.overlay.active {
+  opacity: 1;
+}
+
+.camera-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.change-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-icon {
+  font-size: 48px;
+  color: #bfbfbf;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.picture-upload-wrapper.hovering .overlay {
+  animation: pulse 1.5s infinite;
+} 

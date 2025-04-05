@@ -14,6 +14,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'antd/dist/antd.css'; // Ant Design default style
 import ForgotPassword from './pages/Login/ForgotPassword';
 import ResetPassword from './pages/Login/ResetPassword';
+import RoleSelection from './pages/GoogleAuth/RoleSelection';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
       <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path={routes.register} element={<RegisterPage />} />
+      <Route path="/google/role-selection" element={<RoleSelection />} />
       <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
       <Route path="/farmer" element={<ProtectedRoute><Farmer /></ProtectedRoute>} />
       <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
