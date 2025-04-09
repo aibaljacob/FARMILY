@@ -1,0 +1,660 @@
+.buyer-demands-page {
+  padding: 0px 100px !important;
+  background-color: #f8f9fa !important;
+  min-height: calc(100vh - 100px) !important;
+}
+
+.page-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 30px !important;
+  flex-wrap: wrap !important;
+}
+
+.page-header h2 {
+  color: #2d6a4f !important;
+  margin-bottom: 0 !important;
+}
+
+.filters-section {
+  margin-top: 15px !important;
+}
+
+.search-input {
+  border-radius: 8px !important;
+  border-color: #b5dfb8 !important;
+}
+
+.search-input:hover, .search-input:focus {
+  border-color: #2d6a4f !important;
+  box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.2) !important;
+}
+
+.category-select {
+  border-radius: 8px !important;
+  border-color: #b5dfb8 !important;
+}
+
+.category-select:hover, .category-select:focus {
+  border-color: #2d6a4f !important;
+  box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.2) !important;
+}
+
+/* Demand cards grid layout */
+.demands-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr)) !important;
+  gap: 24px !important;
+}
+
+.demand-card {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  height: 100% !important;
+  border: 1px solid #e8f5e9 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  transition: transform 0.3s, box-shadow 0.3s !important;
+}
+
+.demand-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Unavailable demand card styling */
+.demand-card-unavailable {
+  opacity: 0.8 !important;
+  background-color: #f9f9f9 !important;
+}
+
+.demand-card-unavailable .demand-card-header {
+  filter: grayscale(40%) !important;
+}
+
+/* Card header with title and status */
+.demand-card-header {
+  padding: 16px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  color: white !important;
+}
+
+.demand-title {
+  margin: 0 !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  flex: 1 !important;
+  margin-right: 12px !important;
+}
+
+.status-tag {
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  padding: 0 10px !important;
+}
+
+.status-open {
+  background-color: #52c41a !important;
+  color: white !important;
+  border: none !important;
+}
+
+.status-closed {
+  background-color: #ff4d4f !important;
+  color: white !important;
+  border: none !important;
+}
+
+.demand-content {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Buyer info section styling */
+.demand-buyer-info {
+  margin-bottom: 16px !important;
+}
+
+.buyer-preview {
+  display: flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s !important;
+}
+
+.buyer-preview:hover {
+  background-color: #f1f8f2 !important;
+}
+
+.buyer-avatar {
+  margin-right: 16px !important;
+  border: 2px solid #e8f5e9 !important;
+}
+
+.buyer-avatar.unknown-buyer {
+  border: 1px dashed #d9d9d9 !important;
+  background-color: #f0f0f0 !important;
+}
+
+.buyer-details {
+  flex: 1 !important;
+}
+
+.buyer-name {
+  margin: 0 0 4px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #2d6a4f !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.buyer-name-unknown {
+  color: #bdbdbd !important;
+  font-style: italic !important;
+}
+
+
+.verified-icon {
+  color: #52c41a !important;
+  margin-left: 8px !important;
+  font-size: 16px !important;
+}
+
+.buyer-location {
+  margin: 0 !important;
+  font-size: 14px !important;
+  color: #666 !important;
+}
+
+/* Divider */
+.demand-divider {
+  margin: 8px 0 16px 0 !important;
+}
+
+/* Demand details section */
+.demand-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+.demand-time {
+  color: #666 !important;
+  font-size: 14px !important;
+}
+
+.demand-spec {
+  margin-bottom: 20px !important;
+}
+
+.spec-item {
+  margin-bottom: 8px !important;
+}
+
+.spec-label {
+  font-weight: 600 !important;
+  color: #2d6a4f !important;
+  margin-right: 8px !important;
+}
+
+.spec-value {
+  color: #333 !important;
+}
+
+/* Requirements section */
+.demand-requirements {
+  background-color: #f9f9f9 !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.requirements-title {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2d6a4f !important;
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.requirements-text {
+  margin: 0 !important;
+  color: #333 !important;
+  font-size: 14px !important;
+}
+
+/* Products table section */
+.demand-products {
+  margin-bottom: 20px !important;
+}
+
+.products-title {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2d6a4f !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+
+.product-table {
+  margin-bottom: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+/* Action buttons */
+.demand-actions {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-top: 24px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #f0f0f0 !important;
+  margin-top: auto !important;
+}
+
+.make-offer-btn, .respond-btn {
+  background-color: #2d6a4f !important;
+  border-color: #2d6a4f !important;
+  font-weight: 500 !important;
+  height: 38px !important;
+  margin: 0px 5px;
+}
+
+.respond-btn:hover, .respond-btn:focus {
+  background-color: #1b4332 !important;
+  border-color: #1b4332 !important;
+}
+
+.contact-btn {
+  border-color: #2d6a4f !important;
+  font-weight: 500 !important;
+  height: 38px !important;
+  margin: 0px 5px ;
+}
+
+.contact-btn:hover {
+  background-color: #f1f8f2 !important;
+  color: #2d6a4f !important;
+}
+
+/* Response Modal Styles */
+.demand-response-summary {
+  padding: 0 !important;
+}
+
+.original-demand {
+  background-color: #f9f9f9 !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  border-left: 4px solid #2d6a4f !important;
+}
+
+.original-demand h4 {
+  color: #2d6a4f !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  font-weight: 600 !important;
+}
+
+.original-demand p {
+  margin-bottom: 8px !important;
+}
+
+.original-demand p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.price-slider, .quantity-slider {
+  margin-top: -10px !important;
+  margin-bottom: 20px !important;
+  padding: 0 10px !important;
+}
+
+.response-note {
+  background-color: #f6ffed !important;
+  border: 1px solid #b7eb8f !important;
+  padding: 12px 16px !important;
+  border-radius: 4px !important;
+  margin-bottom: 20px !important;
+  color: rgba(0, 0, 0, 0.65) !important;
+  font-size: 14px !important;
+}
+
+.response-note .anticon {
+  color: #52c41a !important;
+  margin-right: 8px !important;
+}
+
+.response-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-bottom: 0 !important;
+}
+
+/* Additional styles for response form */
+.ant-form-item-label > label {
+  color: #2d6a4f !important;
+  font-weight: 500 !important;
+}
+
+.ant-slider-track {
+  background-color: #2d6a4f !important;
+}
+
+.ant-slider-handle {
+  border-color: #2d6a4f !important;
+}
+
+.ant-slider:hover .ant-slider-track {
+  background-color: #1b4332 !important;
+}
+
+.ant-slider:hover .ant-slider-handle {
+  border-color: #1b4332 !important;
+}
+
+/* Loading and error states */
+.loading-container, .error-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 60px 0 !important;
+}
+
+.loading-container .ant-spin {
+  margin-bottom: 16px !important;
+}
+
+/* Buyer Modal Styles */
+.buyer-profile {
+  padding: 20px 0 !important;
+}
+
+.buyer-header {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.buyer-title {
+  margin-left: 20px !important;
+}
+
+.buyer-title h4 {
+  margin-bottom: 8px !important;
+  color: #2d6a4f !important;
+}
+
+/* Ant Design overrides */
+.ant-card-body {
+  padding: 20px !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #e8f5e9 !important;
+  color: #2d6a4f !important;
+  font-weight: 600 !important;
+  padding: 8px !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 8px !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #f1f8f2 !important;
+}
+
+.ant-input-search .ant-input {
+  border-radius: 8px 0 0 8px !important;
+}
+
+.ant-input-search .ant-input-search-button {
+  border-radius: 0 8px 8px 0 !important;
+  background-color: #2d6a4f !important;
+  border-color: #2d6a4f !important;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .demands-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .demands-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .buyer-demands-page {
+    padding: 20px !important;
+  }
+  
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .filters-section {
+    width: 100% !important;
+  }
+  
+  .ant-space {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .ant-space-item {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .search-input, .category-select {
+    width: 100% !important;
+  }
+  
+  .demand-actions {
+    flex-direction: column !important;
+  }
+  
+  .make-offer-btn, .contact-btn {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+  
+  .make-offer-btn {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Style for the info icon next to unknown buyer */
+.buyer-info-icon {
+  margin-left: 5px !important;
+  color: #bdbdbd !important;
+  font-size: 14px !important;
+}
+
+/* Add styles for unknown buyer */
+.buyer-avatar-unknown {
+  background-color: #f0f0f0 !important;
+  border: 1px dashed #d9d9d9 !important;
+}
+
+.buyer-profile-unavailable {
+  text-align: center !important;
+  padding: 20px !important;
+  background-color: #f9f9f9 !important;
+  border-radius: 8px !important;
+}
+
+.buyer-profile-unavailable ul {
+  text-align: left !important;
+  margin-bottom: 16px !important;
+  color: #666 !important;
+}
+
+.buyer-profile-unavailable .ant-typography {
+  color: #595959 !important;
+}
+
+/* Modal Styles */
+.buyer-details-modal .ant-modal-content,
+.respond-to-demand-modal .ant-modal-content {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.buyer-details-modal .ant-modal-header,
+.respond-to-demand-modal .ant-modal-header {
+  background-color: #f8f9fa !important;
+  border-bottom: 1px solid #e8e8e8 !important;
+}
+
+.buyer-details-modal .ant-modal-title,
+.respond-to-demand-modal .ant-modal-title {
+  color: #2d6a4f !important;
+  font-weight: 600 !important;
+}
+
+.buyer-details-modal .ant-modal-close,
+.respond-to-demand-modal .ant-modal-close {
+  color: #666 !important;
+}
+
+.buyer-details-modal .ant-modal-close:hover,
+.respond-to-demand-modal .ant-modal-close:hover {
+  color: #2d6a4f !important;
+}
+
+/* Buyer Profile Modal Styles */
+.buyer-profile {
+  padding: 16px !important;
+}
+
+.buyer-header {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+
+.buyer-title {
+  margin-left: 16px !important;
+}
+
+.buyer-title h4 {
+  margin-bottom: 4px !important;
+  color: #2d6a4f !important;
+}
+
+/* Response Modal Styles */
+.demand-response-summary {
+  padding: 16px !important;
+}
+
+.original-demand {
+  background-color: #f8f9fa !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e8e8e8 !important;
+}
+
+.original-demand h4 {
+  color: #2d6a4f !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.price-slider,
+.quantity-slider {
+  margin-top: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.response-note {
+  background-color: #f6ffed !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+  color: #52c41a !important;
+  border: 1px solid #b7eb8f !important;
+}
+
+.response-actions {
+  text-align: right !important;
+  margin-bottom: 0 !important;
+}
+
+/* Fix for modal z-index issues */
+.ant-modal-mask {
+  z-index: 1000 !important;
+}
+
+.ant-modal-wrap {
+  z-index: 1000 !important;
+}
+
+.ant-modal {
+  z-index: 1001 !important;
+}
+
+/* Ensure modal body content is visible */
+.ant-modal-body {
+  max-height: calc(90vh - 150px) !important;
+  overflow-y: auto !important;
+}
+
+/* Add styling for the View My Response button */
+.view-response-btn {
+  margin: 0px 5px;
+  background-color: #13c2c2;
+  color: white;
+  border-color: #13c2c2;
+}
+
+.view-response-btn:hover,
+.view-response-btn:focus {
+  background-color: #36cfc9;
+  color: white;
+  border-color: #36cfc9;
+}
+
+.view-response-btn:active {
+  background-color: #08979c;
+  color: white;
+  border-color: #08979c;
+}
+
+/* Styles for response acceptance note and revoke button */
+.response-acceptance-note {
+  margin-top: 16px;
+}
+
+.response-acceptance-note .ant-alert {
+  border-radius: 8px;
+}
+
+.ant-btn-dangerous:disabled {
+  background-color: #fafafa;
+  color: rgba(0, 0, 0, 0.25);
+  border-color: #d9d9d9;
+  text-shadow: none;
+  box-shadow: none;
+} 

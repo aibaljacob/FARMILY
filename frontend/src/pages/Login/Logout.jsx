@@ -7,7 +7,9 @@ const Logout = () => {
 
   useEffect(() => {
     // Clear user session
-    localStorage.removeItem('access_token'); // Clear token or other session data
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('refresh_token');// Clear token or other session data
 
     // Notify the user
     toast.success('You have been logged out successfully.');

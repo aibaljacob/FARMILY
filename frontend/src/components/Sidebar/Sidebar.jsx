@@ -8,13 +8,20 @@ import {
   ProjectOutlined,
   UserOutlined,
   LogoutOutlined,
+  TeamOutlined,
+  FileTextOutlined,
+  CommentOutlined,
 } from '@ant-design/icons';
 import './Sidebar.css';
-import { red } from '@mui/material/colors';
 
 const { Sider } = Layout;
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({onNavigate, isOpen, toggleSidebar, role, profileComplete }) => {
+  // Function to handle navigation with profile check
+  const handleNavigation = (page) => {
+    onNavigate(page);
+  };
+  
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -57,22 +64,56 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               marginTop:'100px'
             }}
           >
-            <Menu.Item key="1" icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard">Overview</Link>
+            <Menu.Item 
+              key="1" 
+              icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('1')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Overview</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/products">Products</Link>
+            <Menu.Item 
+              key="2" 
+              icon={<ShopOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('2')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">{role==1?"Products":"Demands"}</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UsergroupAddOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/buyers">Buyers</Link>
+            
+            <Menu.Item 
+              key="4" 
+              icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('4')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Deals</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/deals">Deals</Link>
+            {role==1 && (
+              <Menu.Item 
+                key="6" 
+                icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} 
+                onClick={() => handleNavigation('6')}
+                disabled={!profileComplete}
+              >
+                <Link to="#">Buyers</Link>
+              </Menu.Item>
+            )}
+            {role==1 && (
+              <Menu.Item 
+                key="7" 
+                icon={<FileTextOutlined style={{ color: '#2d6a4f' }} />} 
+                onClick={() => handleNavigation('7')}
+                disabled={!profileComplete}
+              >
+                <Link to="#">Buyer Demands</Link>
+              </Menu.Item>
+            )}
+            
+            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('5')}>
+              <Link to="#">Profile</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />}>
-              <Link to="/dashboard/profile">Profile</Link>
-            </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>
+            <Menu.Item key="9" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>
               <Link to="/logout" className='logx'>Logout</Link>
             </Menu.Item>
           </Menu>

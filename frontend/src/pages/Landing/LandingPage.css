@@ -11,7 +11,7 @@ body {
 }
 
 /* Optional: You can set it specifically for certain elements if needed */
-h1, h2, h3, h4, p, a {
+h1, h2, h3, h4, a {
   font-family: 'Inter', sans-serif;
 }
 

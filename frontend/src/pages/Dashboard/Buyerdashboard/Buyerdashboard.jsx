@@ -1,263 +1,301 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  ShoppingCart, MessageSquare, User, Heart,
-  Search, Bell, Filter, ChevronDown, Map,
-  Clock, Package, CheckCircle
-} from 'lucide-react';
-import './BuyerDashboard.css';
+import React, { useEffect, useState } from 'react';
+import Sidebar from '../../../components/Sidebar/Sidebar';
+import Header from '../../../components/Header/Header';
+import '../DashboardPage.css';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import ProfilesPage from '../../../components/Profiles/Profiles'
+import ProfileManager from '../../../components/Profiles/ProfileManager';
+import Overview from '../../../components/Overview/Overview';
+import FarmerProductsPage from '../../../components/Products/Products';
+import BuyerDemandsPage from '../../../components/Demands/Demands';
+import DealsHistoryPage from '../../../components/Deals/Deals';
+import FarmerProducts from '../../../components/FarmerProducts/FarmerProducts';
+import { useUser } from '../UserContext';
+import { Layout, Menu } from 'antd';
+import { Link } from 'react-router-dom';
+import { Button } from 'antd';
+import DemandManagement from '../../../components/Demands/PostDemand';
+import Farmers from '../../../components/Farmers/Farmers';
+import WarningNotification from '../../../components/Warnings/WarningNotification';
+import { showProfileIncompleteWarning } from '../../../components/Profiles/ProfileIncompleteAlert';
+import '../../../components/Profiles/ProfileToastStyles.css';
+import CustomToastContainer from '../../../components/Toast/CustomToastContainer';
+import '../../../components/Toast/CustomToastContainer.css';
+
+// Import icons
+import { 
+  DashboardOutlined,
+  ShoppingOutlined,
+  FileTextOutlined,
+  HistoryOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  PlusOutlined,
+  TeamOutlined,
+  UserOutlined
+} from '@ant-design/icons';
+
+const { Sider } = Layout;
 
 const BuyerDashboard = () => {
-  const [activeTab, setActiveTab] = useState('browse');
-  const [userData, setUserData] = useState(null);
-  
-  useEffect(() => {
-    // Fetch user data when the component loads
-    axios
-      .get('/api/user-details', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching user details:', error);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const {profile} = useUser();
+  const pfp=profile?profile.profilepic:null;
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const [userDetails, setUserDetails] = useState(null);
+  const [profileComplete, setProfileComplete] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const username = user ? `${user.first_name} ${user.last_name}` : "Guest";
+
+  const handleNavigation = (page) => {
+    // Map page numbers to section names
+    const pageToSection = {
+      '1': 'dashboard',
+      '2': 'products',
+      '3': 'post-demand',
+      '4': 'deals',
+      '5': 'farmers',
+      '6': 'profile'
+    };
+    
+    const section = pageToSection[page] || 'dashboard';
+    
+    // If profile is not complete, only allow navigation to the profile page
+    if (!profileComplete && page !== '6') {
+      // Show the profile incomplete warning
+      showProfileIncompleteWarning(profileData);
+      setActiveSection('profile');
+      return;
+    }
+    
+    setActiveSection(section);
+  };
+
+  const checkProfileCompletion = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const profileResponse = await axios.get('http://127.0.0.1:8000/api/buyer-profile/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
+      
+      // Get profile data
+      const profileData = profileResponse.data;
+      setProfileData(profileData);
+      
+      // Check if all required fields are filled
+      const requiredFields = ['bio', 'phoneno', 'dob', 'address', 'city', 'state', 'country', 'pincode'];
+      const isProfileComplete = requiredFields.every(field => 
+        profileData[field] && profileData[field].toString().trim() !== ''
+      );
+      
+      setProfileComplete(isProfileComplete);
+      
+      return isProfileComplete;
+    } catch (error) {
+      console.error("Error checking profile completion:", error);
+      return false;
+    }
+  };
+
+  const handleProfileUpdateSuccess = async () => {
+    const isComplete = await checkProfileCompletion();
+    if (isComplete) {
+      toast.success('Profile complete! You now have access to all features.');
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get('http://127.0.0.1:8000/dashboard/' , {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserDetails(response.data);
+        
+        // Check if buyer profile exists and is complete
+        try {
+          const profileResponse = await axios.get('http://127.0.0.1:8000/api/buyer-profile/', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          
+          // Get profile data
+          const profileData = profileResponse.data;
+          setProfileData(profileData);
+          
+          // Check if all required fields are filled
+          const requiredFields = ['bio', 'phoneno', 'dob', 'address', 'city', 'state', 'country', 'pincode'];
+          const isProfileComplete = requiredFields.every(field => 
+            profileData[field] && profileData[field].toString().trim() !== ''
+          );
+          
+          setProfileComplete(isProfileComplete);
+          
+          // If profile is incomplete, redirect to profile page and show warning
+          if (!isProfileComplete) {
+            console.log("Buyer profile incomplete, redirecting to profile page");
+            setActiveSection('profile');
+            // Show the profile incomplete warning
+            showProfileIncompleteWarning(profileData);
+          }
+        } catch (error) {
+          console.log("No buyer profile found, redirecting to profile page");
+          setProfileComplete(false);
+          setActiveSection('profile');
+          // Show the profile incomplete warning
+          showProfileIncompleteWarning(profileData);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('Failed to load user details. Please log in again.');
+      }
+    };
+
+    fetchUserDetails();
   }, []);
 
+  if (!userDetails) {
+    return <p>Loading user details...</p>;
+  }
 
-  // Sample data - replace with actual data from your backend
-  const sampleData = {
-    activePosts: 12,
-    pendingDeals: 3,
-    savedFarmers: 8,
-    notifications: 4,
-    availableProducts: [
-      {
-        id: 1,
-        name: 'Organic Tomatoes',
-        farmer: 'Green Valley Farms',
-        price: 2.99,
-        unit: 'kg',
-        location: 'Sacramento, CA',
-        rating: 4.8,
-        image: '/api/placeholder/200/200'
-      },
-      {
-        id: 2,
-        name: 'Fresh Corn',
-        farmer: 'Sunshine Fields',
-        price: 1.50,
-        unit: 'dozen',
-        location: 'Fresno, CA',
-        rating: 4.5,
-        image: '/api/placeholder/200/200'
-      }
-      // Add more products
-    ],
-    activeOrders: [
-      {
-        id: 1,
-        product: 'Organic Carrots',
-        farmer: 'Happy Harvest',
-        status: 'In Progress',
-        quantity: '50kg',
-        total: 125.00,
-        date: '2025-01-10'
-      }
-      // Add more orders
-    ]
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <Overview />;
+      case 'products':
+        return <FarmerProducts />;
+      case 'post-demand':
+        return <DemandManagement />;
+      case 'deals':
+        return <DealsHistoryPage />;
+      case 'farmers':
+        return <Farmers />;
+      case 'profile':
+        return (
+          <ProfileManager 
+            firstName={user?.first_name} 
+            lastName={user?.last_name} 
+            userid={user?.id} 
+            role={user?.role}
+            onProfileUpdateSuccess={handleProfileUpdateSuccess}
+          />
+        );
+      default:
+        return <Overview />;
+    }
   };
 
   return (
-    <div className="farmily-buyer-container">
-      {/* Sidebar */}
-      <aside className="farmily-buyer-sidebar">
-        <Link to="/" className="farmily-buyer-logo">Farmily</Link>
+    <div className="dashboard-layout">
+      <Layout className="site-layout">
+        <Header userName={username} onNavigate={handleNavigation} pfp={pfp} />
         
-        <nav className="farmily-buyer-nav">
-          <button 
-            className={`farmily-buyer-nav-item ${activeTab === 'browse' ? 'active' : ''}`}
-            onClick={() => setActiveTab('browse')}
+        <Sider
+          className="sidebar"
+          width={280}
+          theme="light"
+          collapsed={!isSidebarOpen}
+          trigger={null}
+          style={{
+            background: 'linear-gradient(to bottom, #d4edda, #b5dfb8)',
+            position: 'fixed',
+            top: 0,
+            height: '100vh',
+            width: 280,
+            zIndex: 1000,
+            boxShadow: '2px 0 10px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <Button
+            className="sidebar-toggle"
+            type="primary"
+            onClick={toggleSidebar}
+            style={{ position: 'absolute', bottom: 20, left: 20, backgroundColor: '#2d6a4f', border: 'none', borderRadius: '15px' }}
           >
-            <Search size={20} />
-            <span>Browse Products</span>
-          </button>
-          <button 
-            className={`farmily-buyer-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            <ShoppingCart size={20} />
-            <span>My Orders</span>
-          </button>
-          <button 
-            className={`farmily-buyer-nav-item ${activeTab === 'messages' ? 'active' : ''}`}
-            onClick={() => setActiveTab('messages')}
-          >
-            <MessageSquare size={20} />
-            <span>Messages</span>
-            <span className="farmily-buyer-badge">3</span>
-          </button>
-          <button 
-            className={`farmily-buyer-nav-item ${activeTab === 'saved' ? 'active' : ''}`}
-            onClick={() => setActiveTab('saved')}
-          >
-            <Heart size={20} />
-            <span>Saved Items</span>
-          </button>
-          <button 
-            className={`farmily-buyer-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-            onClick={() => setActiveTab('profile')}
-          >
-            <User size={20} />
-            <span>Profile</span>
-          </button>
-        </nav>
-      </aside>
+            {isSidebarOpen ? 'Close' : 'Open'} Menu
+          </Button>
 
-      {/* Main Content */}
-      <main className="farmily-buyer-main">
-        {/* Header */}
-        <header className="farmily-buyer-header">
-  <div className="farmily-buyer-search">
-    <Search size={20} />
-    <input type="text" placeholder="Search for products, farmers..." />
-  </div>
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={['1']}
+            style={{
+              background: 'transparent',
+              color: '#2d6a4f',
+              fontWeight: '500',
+              border: 'none',
+              marginTop: '100px'
+            }}
+          >
+            <Menu.Item 
+              key="1" 
+              icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('1')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item 
+              key="2" 
+              icon={<ShoppingOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('2')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Products</Link>
+            </Menu.Item>
+            <Menu.Item 
+              key="3" 
+              icon={<PlusOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('3')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Post Demand</Link>
+            </Menu.Item>
+            <Menu.Item 
+              key="4" 
+              icon={<HistoryOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('4')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Deals</Link>
+            </Menu.Item>
+            <Menu.Item 
+              key="5" 
+              icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('5')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Farmers</Link>
+            </Menu.Item>
+            <Menu.Item key="6" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('6')}>
+              <Link to="#">Profile</Link>
+            </Menu.Item>
+            <Menu.Item key="7" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />} style={{ color: '#e74c3c', marginTop: 'auto' }}>
+              <Link to="/logout" className='logx'>Logout</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
 
-  <div className="farmily-buyer-header-actions">
-    <button className="farmily-buyer-notification">
-      <Bell size={20} />
-      <span className="farmily-buyer-badge">{sampleData.notifications}</span>
-    </button>
-    <div className="farmily-buyer-profile">
-      {userData ? (
-        <>
-          <img
-            src="/api/placeholder/32/32"
-            alt={userData.name}
-            className="farmily-buyer-avatar"
-          />
-          <div>
-            <h3>Welcome, {userData.name} 👋</h3>
-            <p>{userData.email}</p>
+        <Layout style={{ marginLeft: isSidebarOpen ? 280 : 0, transition: 'margin-left 0.3s' }}>
+          <div className="dashboard-content">
+            <div className="filler"></div>
+            {/* Warning notification component */}
+            <WarningNotification />
+            
+            {renderContent()}
           </div>
-        </>
-      ) : (
-        <span>Loading...</span>
-      )}
-    </div>
-  </div>
-</header>
-
-
-        {/* Dashboard Content */}
-        <div className="farmily-buyer-content">
-          {/* Quick Stats */}
-          <div className="farmily-buyer-stats">
-            <div className="farmily-buyer-stat-card">
-              <ShoppingCart size={24} />
-              <div>
-                <h3>Active Posts</h3>
-                <p>{sampleData.activePosts}</p>
-              </div>
-            </div>
-            <div className="farmily-buyer-stat-card">
-              <Clock size={24} />
-              <div>
-                <h3>Pending Deals</h3>
-                <p>{sampleData.pendingDeals}</p>
-              </div>
-            </div>
-            <div className="farmily-buyer-stat-card">
-              <Heart size={24} />
-              <div>
-                <h3>Saved Farmers</h3>
-                <p>{sampleData.savedFarmers}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Product Browse Section */}
-          <section className="farmily-buyer-section">
-            <div className="farmily-buyer-section-header">
-              <h2>Available Products</h2>
-              <div className="farmily-buyer-filters">
-                <button className="farmily-buyer-filter-btn">
-                  <Filter size={16} />
-                  Filters
-                </button>
-                <button className="farmily-buyer-filter-btn">
-                  <Map size={16} />
-                  Location
-                </button>
-                <select className="farmily-buyer-sort">
-                  <option>Sort by: Price</option>
-                  <option>Sort by: Distance</option>
-                  <option>Sort by: Rating</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="farmily-buyer-products">
-              {sampleData.availableProducts.map(product => (
-                <div key={product.id} className="farmily-buyer-product-card">
-                  <img src={product.image} alt={product.name} />
-                  <div className="farmily-buyer-product-info">
-                    <h3>{product.name}</h3>
-                    <p className="farmily-buyer-farmer">{product.farmer}</p>
-                    <p className="farmily-buyer-location">
-                      <Map size={14} />
-                      {product.location}
-                    </p>
-                    <div className="farmily-buyer-product-footer">
-                      <span className="farmily-buyer-price">
-                        ${product.price}/{product.unit}
-                      </span><br />
-                      <button className="farmily-buyer-contact-btn">
-                        Contact Farmer
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Active Orders Section */}
-          <section className="farmily-buyer-section">
-            <h2>Active Orders</h2>
-            <div className="farmily-buyer-orders">
-              {sampleData.activeOrders.map(order => (
-                <div key={order.id} className="farmily-buyer-order-card">
-                  <div className="farmily-buyer-order-header">
-                    <span className={`farmily-buyer-order-status ${order.status.toLowerCase()}`}>
-                      {order.status}
-                    </span>
-                    <span className="farmily-buyer-order-date">{order.date}</span>
-                  </div>
-                  <div className="farmily-buyer-order-details">
-                    <h3>{order.product}</h3>
-                    <p>Farmer: {order.farmer}</p>
-                    <p>Quantity: {order.quantity}</p>
-                    <p className="farmily-buyer-order-total">
-                      Total: ${order.total.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="farmily-buyer-order-actions">
-                    <button className="farmily-buyer-contact-btn">
-                      Track Order
-                    </button>
-                    <button className="farmily-buyer-contact-btn">
-                      Contact Farmer
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </main>
+        </Layout>
+        {/* Custom toast container with adjusted positioning */}
+        <CustomToastContainer />
+      </Layout>
     </div>
   );
 };

@@ -1,0 +1,318 @@
+.farmers-page {
+  padding: 20px !important;
+  background-color: #f8f9fa !important;
+  min-height: 100vh !important;
+}
+
+.page-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 24px !important;
+}
+
+.page-header h3 {
+  color: #2d6a4f !important;
+  margin-bottom: 8px !important;
+}
+
+.sample-data-notice {
+  background-color: #fffbe6 !important;
+  border: 1px solid #ffe58f !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.sample-data-notice .anticon {
+  color: #faad14 !important;
+  margin-right: 8px !important;
+}
+
+/* Filters styling */
+.filters-container {
+  background-color: #f0f9f0 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-bottom: 20px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border-left: 4px solid #2d6a4f !important;
+}
+
+.search-filters {
+  display: flex !important;
+  margin-bottom: 16px !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+.search-input {
+  flex: 1 !important;
+  min-width: 200px !important;
+}
+
+.search-input .ant-input {
+  border-color: #b7eb8f !important;
+}
+
+.search-input .ant-input:hover,
+.search-input .ant-input:focus {
+  border-color: #52c41a !important;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+}
+
+.location-select {
+  min-width: 150px !important;
+}
+
+.location-select .ant-select-selector {
+  border-color: #b7eb8f !important;
+}
+
+.location-select .ant-select-selector:hover,
+.location-select .ant-select-focused .ant-select-selector {
+  border-color: #52c41a !important;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+}
+
+.nearby-filters {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.nearby-toggle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-width: 200px !important;
+}
+
+.nearby-toggle .ant-switch {
+  background-color: #d9d9d9 !important;
+}
+
+.nearby-toggle .ant-switch-checked {
+  background-color: #52c41a !important;
+}
+
+.nearby-filters .ant-radio-group {
+  border-color: #b7eb8f !important;
+}
+
+.nearby-filters .ant-radio-button-wrapper {
+  border-color: #b7eb8f !important;
+  color: #52c41a !important;
+}
+
+.nearby-filters .ant-radio-button-wrapper:hover {
+  color: #389e0d !important;
+}
+
+.nearby-filters .ant-radio-button-wrapper-checked {
+  border-color: #52c41a !important;
+  background: #f6ffed !important;
+  color: #2d6a4f !important;
+}
+
+.results-summary {
+  margin-bottom: 16px !important;
+  font-style: italic !important;
+  color: #666 !important;
+}
+
+/* Proximity indicator */
+.proximity-indicator {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  z-index: 2 !important;
+}
+
+.proximity-high {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  border: 1px solid #c3e6cb !important;
+}
+
+.proximity-medium {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffeeba !important;
+}
+
+.proximity-low {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  border: 1px solid #e9ecef !important;
+}
+
+.loading-container,
+.error-container,
+.empty-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 60px 0 !important;
+  text-align: center !important;
+}
+
+.loading-container .ant-spin {
+  margin-bottom: 16px !important;
+}
+
+.error-container .anticon {
+  margin-bottom: 16px !important;
+}
+
+/* Farmer Card Styles */
+.farmer-card {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  background-color: #fff !important;
+  position: relative !important; /* For positioning the proximity indicator */
+}
+
+.farmer-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+.farmer-card .ant-card-body {
+  padding: 20px !important;
+}
+
+.farmer-header {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+
+.farmer-avatar {
+  margin-right: 16px !important;
+  background-color: #2d6a4f !important;
+}
+
+.farmer-info {
+  flex: 1 !important;
+}
+
+.farmer-name {
+  margin: 0 !important;
+  color: #2d6a4f !important;
+}
+
+.farmer-details {
+  margin: 16px 0 !important;
+}
+
+.detail-item {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+}
+
+.detail-icon {
+  margin-right: 8px !important;
+  color: #2d6a4f !important;
+}
+
+.farmer-actions {
+  margin-top: 16px !important;
+}
+
+.farmer-actions .ant-btn-primary {
+  background-color: #2d6a4f !important;
+  border-color: #2d6a4f !important;
+}
+
+.farmer-actions .ant-btn-primary:hover {
+  background-color: #1b4332 !important;
+  border-color: #1b4332 !important;
+}
+
+.farmer-actions .ant-btn-default {
+  border-color: #2d6a4f !important;
+  color: #2d6a4f !important;
+}
+
+.farmer-actions .ant-btn-default:hover {
+  border-color: #1b4332 !important;
+  color: #1b4332 !important;
+  background-color: #f0f9f0 !important;
+}
+
+.farmer-card .ant-tag {
+  margin-right: 0 !important;
+}
+
+.farmer-card .ant-badge-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.pagination-container {
+  margin-top: 24px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.pagination-container .ant-pagination-item-active {
+  border-color: #2d6a4f !important;
+}
+
+.pagination-container .ant-pagination-item-active a {
+  color: #2d6a4f !important;
+}
+
+.pagination-container .ant-pagination-item:hover {
+  border-color: #52c41a !important;
+}
+
+.pagination-container .ant-pagination-item:hover a {
+  color: #52c41a !important;
+}
+
+.ant-empty-description {
+  color: #8c8c8c !important;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .farmer-header {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+
+  .farmer-avatar {
+    margin-right: 0 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .search-filters,
+  .nearby-filters {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .search-input,
+  .location-select {
+    width: 100% !important;
+  }
+} 

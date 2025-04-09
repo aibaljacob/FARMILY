@@ -16,6 +16,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# settings.py
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Increase this as needed
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +35,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Application definition
 
@@ -42,16 +47,50 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for django-allauth
     'rest_framework',
-    'api',
+    'rest_framework_simplejwt',
+    'users.apps.UsersConfig',
     'corsheaders',
-    'users',
-    'rest_framework_simplejwt.token_blacklist',
+    'chat',
+    'payment',  # Add payment app
+    'deals',    # Add deals app
+    
+    # django-allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # Added for django-allauth
 ]
+
+# django-allauth settings
+SITE_ID = 1  # Required for django-allauth
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+SOCIALACCOUNT_AUTO_SIGNUP = False  # We'll handle this manually to collect additional info
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        # Add your Google OAuth credentials here
+        'CLIENT_ID': '34872999039-80tl2fv16pckcobiibco3n7tjjhgnp8p.apps.googleusercontent.com',
+        'SECRET': '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',
+        'VERIFIED_EMAIL': True
+    }
+}
 
 
 REST_FRAMEWORK = {
@@ -64,11 +103,22 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # or use any other email service
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email host
+EMAIL_PORT = 587  # Usually 587 for TLS or 465 for SSL
+EMAIL_USE_TLS = True  # or False depending on the email provider
+EMAIL_USE_SSL = False  # Choose based on your provider
+EMAIL_HOST_USER = 'aibaljacobmani@gmail.com'  # Your email
+EMAIL_HOST_PASSWORD = 'jznx xtou ccfn bqqn'  # Your email password
+DEFAULT_FROM_EMAIL = 'aibaljacobmani@gmail.com'  # Default from address
+
+
 
 
 MIDDLEWARE = [
@@ -80,14 +130,50 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required for django-allauth
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  # React frontend
+    'http://127.0.0.1:5173',  # Alternative local frontend
+]
+
+# Session configuration
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = None  # Required for cross-origin requests
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
+SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
+
+# Add CORS settings for WebSockets
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:[0-9]+$",
+    r"^http://127.0.0.1:[0-9]+$",
+]
+
+# To allow websockets
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 ROOT_URLCONF = 'farmily.urls'
@@ -167,3 +253,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = 'rzp_test_QWzUeBlDdGFSH0'
+RAZORPAY_KEY_SECRET = 'wXOxUom8zbtR29KYY4Ys7hYf'

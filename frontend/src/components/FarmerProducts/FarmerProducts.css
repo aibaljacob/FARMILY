@@ -1,0 +1,675 @@
+.farmer-products-container {
+  padding: 24px !important;
+  background-color: #f0f2f5 !important;
+  min-height: 100vh !important;
+}
+
+.page-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 24px !important;
+  flex-wrap: wrap !important;
+  gap: 16px !important;
+}
+
+.header-left {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.header-right {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.market-stats {
+  margin-bottom: 24px !important;
+}
+
+.products-grid {
+  margin-top: 16px !important;
+}
+
+/* Product Card Styling */
+.product-card {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: all 0.3s !important;
+  position: relative !important;
+  border: none !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.product-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.product-card .ant-card-body {
+  padding: 20px !important;
+}
+
+.product-card .ant-card-actions {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.product-card .ant-card-actions > li {
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.product-card .ant-card-actions > li:last-child {
+  border-right: none !important;
+}
+
+.product-card .ant-card-actions > li > span {
+  color: #595959 !important;
+  transition: color 0.3s ease !important;
+}
+
+.product-card .ant-card-actions > li > span:hover {
+  color: #52c41a !important;
+}
+
+.product-img-container {
+  position: relative !important;
+  height: 180px !important;
+  background-color: #f9f9f9 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.product-img {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.placeholder-img {
+  width: 80px !important;
+  height: 80px !important;
+  background-color: #f0f0f0 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.category-tag {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 1 !important;
+  font-size: 12px !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+}
+
+.product-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 12px !important;
+}
+
+.product-category {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  text-transform: capitalize !important;
+  transition: color 0.3s !important;
+}
+
+.product-price {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #2d6a4f !important;
+}
+
+.delivery-tag {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 1 !important;
+  font-weight: 500 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+}
+
+.product-name {
+  margin-bottom: 0 !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  margin-right: 12px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  text-transform: capitalize !important;
+}
+
+.product-quantity-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  border-left: 3px solid #52c41a !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.quantity-badge {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+}
+
+.quantity-badge strong {
+  font-weight: 600 !important;
+}
+
+.product-farmer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.product-farmer:hover {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.farmer-name {
+  font-size: 12px !important;
+  color: #595959 !important;
+  display: flex !important;
+  align-items: center !important;
+  font-weight: 500 !important;
+}
+
+.product-footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: auto !important;
+  padding-top: 12px !important;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1) !important;
+}
+
+.product-date {
+  font-size: 12px !important;
+  color: #595959 !important;
+  font-weight: 500 !important;
+}
+
+/* Farmer Modal Styles */
+.farmer-modal-content {
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  padding-right: 10px !important;
+}
+
+.contact-item {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+}
+
+.contact-icon {
+  margin-right: 10px !important;
+  color: #1890ff !important;
+}
+
+/* Loading and Error Containers */
+.loading-container,
+.error-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 300px !important;
+  gap: 16px !important;
+}
+
+/* Ant Design Component Overrides */
+.ant-list-item {
+  padding-bottom: 24px !important;
+}
+
+.ant-tag {
+  border-radius: 4px !important;
+  padding: 2px 8px !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+.ant-tag-success {
+  background-color: #f6ffed !important;
+  border-color: #b7eb8f !important;
+  color: #52c41a !important;
+}
+
+.ant-tag-error {
+  background-color: #fff1f0 !important;
+  border-color: #ffa39e !important;
+  color: #f5222d !important;
+}
+
+.ant-tooltip-inner {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+.ant-empty {
+  padding: 32px 0 !important;
+}
+
+.ant-empty-image {
+  height: 100px !important;
+}
+
+.ant-empty-description {
+  color: #8c8c8c !important;
+}
+
+.ant-spin {
+  color: #52c41a !important;
+}
+
+.ant-spin-dot-item {
+  background-color: #52c41a !important;
+}
+
+.ant-list-pagination {
+  margin-top: 24px !important;
+}
+
+.ant-pagination {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.ant-pagination-item {
+  border-radius: 4px !important;
+  margin: 0 4px !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: #52c41a !important;
+}
+
+.ant-pagination-item:hover a {
+  color: #52c41a !important;
+}
+
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
+  border-color: #52c41a !important;
+  color: #52c41a !important;
+}
+
+.ant-pagination-disabled .ant-pagination-item-link {
+  color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+  cursor: not-allowed !important;
+}
+
+/* Category-specific card styles with more vibrant colors */
+.product-card[data-category="rubber"] {
+  background: linear-gradient(135deg, #fff7e6, #ffe7ba) !important;
+}
+
+.product-card[data-category="coconut"] {
+  background: linear-gradient(135deg, #f6ffed, #d9f7be) !important;
+}
+
+.product-card[data-category="jackfruit"] {
+  background: linear-gradient(135deg, #fffbe6, #fff1b8) !important;
+}
+
+.product-card[data-category="banana"] {
+  background: linear-gradient(135deg, #fff7e6, #ffe7ba) !important;
+}
+
+.product-card[data-category="pepper"] {
+  background: linear-gradient(135deg, #fff1f0, #ffa39e) !important;
+}
+
+.product-card[data-category="cardamom"] {
+  background: linear-gradient(135deg, #f9f0ff, #efdbff) !important;
+}
+
+.product-card[data-category="tea"] {
+  background: linear-gradient(135deg, #e6fffb, #b5f5ec) !important;
+}
+
+.product-card[data-category="coffee"] {
+  background: linear-gradient(135deg, #fff7e6, #ffe7ba) !important;
+}
+
+.product-card[data-category="arecanut"] {
+  background: linear-gradient(135deg, #fffbe6, #fff1b8) !important;
+}
+
+.product-card[data-category="cashew"] {
+  background: linear-gradient(135deg, #fff7e6, #ffe7ba) !important;
+}
+
+.product-card[data-category="ginger"] {
+  background: linear-gradient(135deg, #fff1f0, #ffa39e) !important;
+}
+
+.product-card[data-category="turmeric"] {
+  background: linear-gradient(135deg, #fffbe6, #fff1b8) !important;
+}
+
+.product-card[data-category="nutmeg"] {
+  background: linear-gradient(135deg, #fff1f0, #ffa39e) !important;
+}
+
+.product-card[data-category="clove"] {
+  background: linear-gradient(135deg, #f9f0ff, #efdbff) !important;
+}
+
+.product-card[data-category="tapioca"] {
+  background: linear-gradient(135deg, #e6f7ff, #bae7ff) !important;
+}
+
+.product-card[data-category="mango"] {
+  background: linear-gradient(135deg, #fff0f6, #ffadd2) !important;
+}
+
+.product-card[data-category="pineapple"] {
+  background: linear-gradient(135deg, #fffbe6, #fff1b8) !important;
+}
+
+.product-card[data-category="others"] {
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .header-right {
+    width: 100% !important;
+    margin-top: 16px !important;
+  }
+  
+  .header-right .ant-space {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .header-right .ant-space .ant-input-search,
+  .header-right .ant-space .ant-select {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .market-stats .ant-col {
+    margin-bottom: 16px !important;
+  }
+}
+
+/* Price Offer Modal Styles */
+.price-offer-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.price-offer-modal .ant-modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.price-offer-modal .ant-modal-title {
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+.price-offer-content {
+  padding: 16px 0;
+}
+
+.product-offer-summary {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.product-offer-summary .placeholder-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  background-color: #e6f7ff;
+  border-radius: 8px;
+}
+
+.price-slider,
+.quantity-slider {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.offer-note {
+  background-color: #f6ffed;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.offer-actions {
+  text-align: right;
+  margin-bottom: 0;
+}
+
+/* Make respond button stand out */
+.respond-btn {
+  background-color: #2d6a4f;
+  color: white;
+  border-color: #2d6a4f;
+}
+
+.respond-btn:hover, .respond-btn:focus {
+  background-color: #1a5336;
+  color: white;
+  border-color: #1a5336;
+}
+
+/* Add these styles to enhance the footer and button */
+
+.product-card .product-footer {
+  margin-top: 12px;
+}
+
+.product-card .product-date {
+  font-size: 12px;
+}
+
+.product-card .respond-btn {
+  font-size: 12px;
+  height: 28px;
+  padding: 0 12px;
+}
+
+/* Ensure the offer modal has proper spacing */
+.price-offer-modal .ant-form-item {
+  margin-bottom: 18px;
+}
+
+.price-offer-modal .offer-note {
+  margin-top: 8px;
+}
+
+.price-offer-content .ant-divider {
+  margin: 16px 0;
+}
+
+/* Enhance the price display */
+.product-offer-summary .ant-typography {
+  margin-bottom: 6px;
+}
+
+.product-offer-summary h4 {
+  color: #2d6a4f;
+  margin-bottom: 12px;
+}
+
+/* Add styles for the timeline and response modal */
+.offer-timeline {
+  margin-top: 24px;
+  padding: 0 8px;
+}
+
+.offer-timeline .ant-timeline {
+  margin-top: 16px;
+}
+
+.ant-timeline-item {
+  padding-bottom: 24px;
+}
+
+.ant-timeline-item-tail {
+  border-left: 2px solid #f0f0f0;
+}
+
+.ant-timeline-item-head {
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-width: 3px;
+}
+
+.ant-timeline-item-head-blue {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.ant-timeline-item-head-green {
+  border-color: #52c41a;
+  color: #52c41a;
+}
+
+.ant-timeline-item-head-red {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.ant-timeline-item-label {
+  width: 120px !important;
+  text-align: right;
+  padding-right: 16px;
+  position: relative;
+}
+
+.timeline-content {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: white;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  border-left: 4px solid transparent;
+}
+
+.timeline-content:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Style adjustments for the note and response sections */
+.timeline-content .ant-tag {
+  font-weight: 600;
+  border-width: 0;
+  padding: 2px 10px;
+}
+
+/* Add a subtle pulse animation to the timeline dots */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(24, 144, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}
+
+.ant-timeline-item-head-blue {
+  animation: pulse 2s infinite;
+}
+
+.ant-timeline-item-head-green {
+  animation: none;
+}
+
+.ant-timeline-item-head-red {
+  animation: none;
+}
+
+/* Adjust spacing in the modal */
+.ant-modal-body {
+  padding: 24px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* Fix table styles */
+.ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.ant-table-thead > tr > th {
+  background-color: #f5f5f5;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Ensure responsive layout */
+@media (max-width: 768px) {
+  .ant-timeline-item-label {
+    width: 100px !important;
+    font-size: 12px;
+  }
+  
+  .timeline-content {
+    padding: 12px;
+  }
+} 
