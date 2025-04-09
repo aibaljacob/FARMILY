@@ -5,10 +5,20 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Card } from "antd";
 
-const ProfileManager = ({ firstName, lastName, userid, role }) => {
+const ProfileManager = ({ firstName, lastName, userid, role, onProfileUpdateSuccess }) => {
   const [mode, setMode] = useState('loading');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const handleModeChange = (newMode) => {
+    setMode(newMode);
+    
+    // If changing from edit/create mode to view mode, it might indicate a successful update
+    if ((mode === 'update' || mode === 'create') && newMode === 'view' && onProfileUpdateSuccess) {
+      onProfileUpdateSuccess();
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -42,13 +52,13 @@ const ProfileManager = ({ firstName, lastName, userid, role }) => {
 
   const handleProfileCreated = (newProfileData) => {
     setProfileData(newProfileData);
-    setMode('view');
+    handleModeChange('view');
     toast.success('Profile created successfully!');
   };
 
   const handleProfileUpdated = (updatedProfileData) => {
     setProfileData(updatedProfileData);
-    setMode('view');
+    handleModeChange('view');
     toast.success('Profile updated successfully!');
   };
 
@@ -66,7 +76,7 @@ const ProfileManager = ({ firstName, lastName, userid, role }) => {
             firstName={firstName} 
             lastName={lastName} 
             ed={<button
-                onClick={() => setMode('update')}
+                onClick={() => handleModeChange('update')}
                 className="cursor-pointer px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-700 w-30 h-8" style={{color:"white"}}
               >
                 Edit Profile
@@ -81,7 +91,7 @@ const ProfileManager = ({ firstName, lastName, userid, role }) => {
           userid={userid}
           isFarmer={role}
           onSuccess={handleProfileCreated}
-          setMode={setMode}
+          setMode={handleModeChange}
         />
       )}
 
@@ -94,12 +104,12 @@ const ProfileManager = ({ firstName, lastName, userid, role }) => {
             firstName={firstName}
             lastName={lastName}
             userid={userid}
-            setMode={setMode}
+            setMode={handleModeChange}
             initialData={profileData}
             onSuccess={handleProfileUpdated}
             isFarmer={role}
             can={<button
-                onClick={() => setMode('view')}
+                onClick={() => handleModeChange('view')}
                 variant="outline"
                 className="cursor-pointer px-4 py-2 rounded-md w-20 h-8"
               >

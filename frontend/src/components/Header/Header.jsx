@@ -101,10 +101,7 @@ const Header = ({ userName, admin, onNavigate, pfp }) => {
       // Update unread count
       setUnreadCount(prev => Math.max(0, prev - 1));
       
-      // Navigate if a redirect URL is provided
-      if (redirectUrl) {
-        navigate(redirectUrl);
-      }
+      // No longer redirecting to any URL
       
       // Close the dropdown
       setNotificationVisible(false);

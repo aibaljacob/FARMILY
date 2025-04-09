@@ -208,19 +208,19 @@ const RecentPosts = () => {
         dataSource={posts}
         renderItem={(post) => (
           <List.Item>
-            <Badge.Ribbon text={`${post.quantity} ${post.unit} Available`} color="#52c41a">
+            <Badge.Ribbon text={`${post.quantity} ${post.unit} ${userRole === 1 ? 'Available' : 'Needed'}`} color="#52c41a">
               <Card 
                 hoverable 
                 bordered 
                 className="post-card"
-                actions={[
-                  <Tooltip title="View Details">
-                    <EyeOutlined key="view" />
-                  </Tooltip>,
-                  <Tooltip title="Browse Similar">
-                    <AppstoreOutlined key="browse" />
-                  </Tooltip>
-                ]}
+                // actions={[
+                //   <Tooltip title="View Details">
+                //     <EyeOutlined key="view" />
+                //   </Tooltip>,
+                //   <Tooltip title="Browse Similar">
+                //     <AppstoreOutlined key="browse" />
+                //   </Tooltip>
+                // ]}
               >
                 <Card.Meta
                   avatar={

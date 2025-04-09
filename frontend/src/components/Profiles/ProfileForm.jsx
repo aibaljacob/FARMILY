@@ -4,9 +4,10 @@ import ProfilePictureUpload from './Pfp';
 import PhoneVerification from './PhoneVerification';
 import countriesData from "./countries.json";
 import { Card, Form, Input, Select, DatePicker, Button, Divider, Typography, Row, Col, message } from 'antd';
-import { UserOutlined, HomeOutlined, GlobalOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, HomeOutlined, GlobalOutlined, MailOutlined, PhoneOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import './ProfileComponents.css';
+import './ProfileDatePicker.css';
 import pincodeData from './pincode.json';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -45,7 +46,7 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
       setCities(state ? state.cities : []);
     }
   });
-  
+
   useEffect(() => {
     if (selectedCity) {
       const state = states.find((s) => s.name === selectedState);
@@ -55,6 +56,32 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
     }
   }, [selectedCity]);
 
+  // Function to validate phone number format
+  const validatePhoneNumber = (phone) => {
+    // Indian phone number format: 10 digits, optionally starting with +91
+    const phoneRegex = /^(\+91[ -]?)?[0]?(91)?[6789]\d{9}$/;
+    return phoneRegex.test(phone);
+  };
+
+  // Function to validate if date is at least 18 years ago
+  const validateAge = (dob) => {
+    if (!dob) return false;
+
+    const birthDate = new Date(dob);
+    const today = new Date();
+
+    // Calculate age
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Adjust age if birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age >= 18;
+  };
+
   const handleChange = (e) => {
     if (e.target.name === 'profilepic') {
       const file = e.target.files[0];
@@ -62,26 +89,41 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
-    }
-     else {
+    } else {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
+
+      // Validate phone number
+      if (name === 'phoneno') {
+        if (!validatePhoneNumber(value)) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            phoneno: 'Please enter a valid Indian phone number (10 digits)',
+          }));
+        } else {
+          setErrors((prevErrors) => {
+            const { phoneno, ...rest } = prevErrors;
+            return rest;
+          });
+        }
+      }
+
       if (name === 'pincode') {
-        
+
         if (!Array.isArray(pincodeData.pincodes)) {
           console.error("pincodeData is not an array. Check your JSON structure.");
           return;
         }
         if (!(pincodeData.pincodes).includes(Number(value))) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                pincode: 'Invalid Pincode',
-            }));
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            pincode: 'Invalid Pincode',
+          }));
         } else {
-            setErrors((prevErrors) => {
-                const { pincode, ...rest } = prevErrors;
-                return rest;
-            });
+          setErrors((prevErrors) => {
+            const { pincode, ...rest } = prevErrors;
+            return rest;
+          });
         }
       }
     }
@@ -89,6 +131,37 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
 
   const handlePhoneUpdate = (newPhone) => {
     setFormData((prev) => ({ ...prev, phoneno: newPhone }));
+
+    // Validate the updated phone number
+    if (!validatePhoneNumber(newPhone)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phoneno: 'Please enter a valid Indian phone number (10 digits)',
+      }));
+    } else {
+      setErrors((prevErrors) => {
+        const { phoneno, ...rest } = prevErrors;
+        return rest;
+      });
+    }
+  };
+
+  // Handle date of birth change
+  const handleDateChange = (date, dateString) => {
+    setFormData({ ...formData, dob: dateString });
+
+    // Validate age (must be at least 18)
+    if (!validateAge(dateString)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        dob: 'You must be at least 18 years old',
+      }));
+    } else {
+      setErrors((prevErrors) => {
+        const { dob, ...rest } = prevErrors;
+        return rest;
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -96,7 +169,7 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
     if (Object.keys(errors).length > 0) {
       message.error("Form contains errors. Fix them before submitting.");
       return; // Stop form submission if there are errors
-  }
+    }
     const city = cities.find((c) => c.name === selectedCity);
     onSubmit({ ...formData, lat: city?.latitude, lng: city?.longitude });
   };
@@ -122,7 +195,7 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
             </Col>
             <Col xs={24} md={18}>
               <div className="profile-picture-upload">
-                <ProfilePictureUpload 
+                <ProfilePictureUpload
                   name="profilepic"
                   onChange={handleChange}
                   preview={preview || (initialData.profilepic ? `http://127.0.0.1:8000${initialData.profilepic}` : null)}
@@ -175,23 +248,48 @@ const ProfileForm = ({ initialData, onSubmit, loading, firstName, lastName, subm
             <Col xs={24} md={12}>
               <div className="form-group">
                 <Text strong>Phone Number</Text>
-                <PhoneVerification 
-                  view={initialData.phoneno} 
-                  phoneno={formData.phoneno} 
-                  onPhoneChange={handlePhoneUpdate}
+                <Input
+                  name="phoneno"
+                  value={formData.phoneno || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your phone number"
+                  className="form-input"
+                  prefix={<PhoneOutlined />}
                 />
+                {errors.phoneno && (
+                  <Text className='text-red' type="danger" style={{ display: 'block', marginTop: '4px' }}>
+                    {errors.phoneno}
+                  </Text>
+                )}
               </div>
             </Col>
             <Col xs={24} md={12}>
               <div className="form-group">
                 <Text strong>Date of Birth</Text>
-                <Input
-                  type="date"
-                  name="dob"
-                  value={formData.dob || ''}
-                  onChange={handleChange}
-                  className="form-input"
-                />
+                <div className="date-picker-wrapper">
+                  <div className="date-picker-prefix">
+                    <CalendarOutlined />
+                  </div>
+                  <DatePicker
+                    name="dob"
+                    value={formData.dob ? moment(formData.dob) : null}
+                    onChange={handleDateChange}
+                    placeholder="Select your date of birth"
+                    className="form-input date-picker-with-prefix"
+                    suffixIcon={<CalendarOutlined />}
+                    format="YYYY-MM-DD"
+                    style={{ width: '100%' }}
+                    disabledDate={(current) => {
+                      // Only disable future dates
+                      return current && current > moment().endOf('day');
+                    }}
+                  />
+                </div>
+                {errors.dob && (
+                  <Text className='text-red' type="danger" style={{ display: 'block', marginTop: '4px' }}>
+                    {errors.dob}
+                  </Text>
+                )}
               </div>
             </Col>
           </Row>

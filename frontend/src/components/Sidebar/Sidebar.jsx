@@ -16,7 +16,12 @@ import './Sidebar.css';
 
 const { Sider } = Layout;
 
-const Sidebar = ({onNavigate, isOpen, toggleSidebar, role }) => {
+const Sidebar = ({onNavigate, isOpen, toggleSidebar, role, profileComplete }) => {
+  // Function to handle navigation with profile check
+  const handleNavigation = (page) => {
+    onNavigate(page);
+  };
+  
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -59,28 +64,53 @@ const Sidebar = ({onNavigate, isOpen, toggleSidebar, role }) => {
               marginTop:'100px'
             }}
           >
-            <Menu.Item key="1" icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('1')}>
+            <Menu.Item 
+              key="1" 
+              icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('1')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Overview</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('2')}>
+            <Menu.Item 
+              key="2" 
+              icon={<ShopOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('2')}
+              disabled={!profileComplete}
+            >
               <Link to="#">{role==1?"Products":"Demands"}</Link>
             </Menu.Item>
             
-            <Menu.Item key="4" icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('4')}>
+            <Menu.Item 
+              key="4" 
+              icon={<ProjectOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('4')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Deals</Link>
             </Menu.Item>
             {role==1 && (
-              <Menu.Item key="6" icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('6')}>
-                <Link to="#">View Buyers</Link>
+              <Menu.Item 
+                key="6" 
+                icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} 
+                onClick={() => handleNavigation('6')}
+                disabled={!profileComplete}
+              >
+                <Link to="#">Buyers</Link>
               </Menu.Item>
             )}
             {role==1 && (
-              <Menu.Item key="7" icon={<FileTextOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('7')}>
-                <Link to="#">View Buyer Demands</Link>
+              <Menu.Item 
+                key="7" 
+                icon={<FileTextOutlined style={{ color: '#2d6a4f' }} />} 
+                onClick={() => handleNavigation('7')}
+                disabled={!profileComplete}
+              >
+                <Link to="#">Buyer Demands</Link>
               </Menu.Item>
             )}
             
-            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => onNavigate('5')}>
+            <Menu.Item key="5" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('5')}>
               <Link to="#">Profile</Link>
             </Menu.Item>
             <Menu.Item key="9" icon={<LogoutOutlined style={{ color: '#e74c3c' }} />}  style={{ color: '#e74c3c', marginTop: 'auto' }}>

@@ -101,7 +101,8 @@ class ProductOfferSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'buyer', 'buyer_name', 'offered_price', 
                  'quantity', 'notes', 'status', 'created_at', 
                  'updated_at', 'product_details', 'farmer_message', 'delivery_status',
-                 'break_requested', 'break_requested_by']
+                 'break_requested', 'break_requested_by', 'is_paid', 'payment_id', 'payment_date',
+                 'complete_requested', 'complete_requested_by']
     
     def __init__(self, *args, **kwargs):
         super(ProductOfferSerializer, self).__init__(*args, **kwargs)
@@ -180,7 +181,8 @@ class DemandResponseSerializer(serializers.ModelSerializer):
         fields = ['id', 'demand', 'farmer', 'farmer_name', 'offered_price', 
                  'offered_quantity', 'notes', 'status', 'created_at', 
                  'updated_at', 'demand_details', 'buyer_message', 'can_deliver', 'delivery_status',
-                 'break_requested', 'break_requested_by']
+                 'break_requested', 'break_requested_by', 'is_paid', 'payment_id', 'payment_date',
+                 'complete_requested', 'complete_requested_by']
     
     def __init__(self, *args, **kwargs):
         super(DemandResponseSerializer, self).__init__(*args, **kwargs)

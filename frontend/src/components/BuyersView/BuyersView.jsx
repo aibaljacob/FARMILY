@@ -313,7 +313,8 @@ const BuyersView = () => {
         return {
           ...normalizedBuyer,
           proximity: proximityScore,
-          demands_count: 0 // Initialize demands_count to 0, will be updated when demand data is fetched
+          demands_count: 0, // Initialize demands_count to 0, will be updated when demand data is fetched
+          reviews: [] // Initialize reviews to empty array
         };
       });
       
@@ -345,12 +346,13 @@ const BuyersView = () => {
         );
       }
       
-      // Fetch demand counts for each buyer
+      // Fetch demand counts and reviews for each buyer
       processedBuyers.forEach(async (buyer) => {
         try {
           const buyerId = buyer.user || buyer.id;
           if (!buyerId) return;
           
+          // Fetch demands count
           const demandResponse = await axios.get(
             `http://127.0.0.1:8000/api/buyers/${buyerId}/demands/`,
             {
@@ -360,25 +362,41 @@ const BuyersView = () => {
             }
           );
           
-          if (demandResponse.data) {
-            // Update the buyer with the demand count
-            setBuyers(prevBuyers => 
-              prevBuyers.map(b => 
-                (b.id === buyer.id || b.user === buyer.user) ? 
-                { ...b, demands_count: demandResponse.data.length } : b
-              )
-            );
-            
-            // Also update filtered buyers
-            setFilteredBuyers(prevBuyers => 
-              prevBuyers.map(b => 
-                (b.id === buyer.id || b.user === buyer.user) ? 
-                { ...b, demands_count: demandResponse.data.length } : b
-              )
-            );
-          }
+          // Fetch reviews for the buyer
+          const reviewsResponse = await axios.get(
+            `http://127.0.0.1:8000/api/buyer-ratings/${buyerId}/`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+          
+          // Update the buyer with demand count and reviews
+          setBuyers(prevBuyers => 
+            prevBuyers.map(b => 
+              (b.id === buyer.id || b.user === buyer.user) ? 
+              { 
+                ...b, 
+                demands_count: demandResponse.data?.length || 0,
+                reviews: reviewsResponse.data?.ratings || []
+              } : b
+            )
+          );
+          
+          // Also update filtered buyers
+          setFilteredBuyers(prevBuyers => 
+            prevBuyers.map(b => 
+              (b.id === buyer.id || b.user === buyer.user) ? 
+              { 
+                ...b, 
+                demands_count: demandResponse.data?.length || 0,
+                reviews: reviewsResponse.data?.ratings || []
+              } : b
+            )
+          );
         } catch (error) {
-          console.error(`Error fetching demands for buyer ${buyer.id}:`, error);
+          console.error(`Error fetching demands and reviews for buyer ${buyer.id}:`, error);
         }
       });
     } catch (error) {

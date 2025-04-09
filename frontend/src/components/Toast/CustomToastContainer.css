@@ -1,0 +1,70 @@
+/* Custom styles for the toast container to ensure visibility */
+
+.custom-toast-container {
+  z-index: 9999 !important; /* Ensure toasts appear above other elements */
+}
+
+/* Adjust the position of the toast container to be visible below the header */
+.Toastify__toast-container--top-right,
+.Toastify__toast-container--top-center,
+.Toastify__toast-container--top-left {
+  top: 80px !important; /* Adjust this value based on your header height */
+}
+
+/* Enhance the toast appearance */
+.Toastify__toast {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  margin-bottom: 12px !important;
+  overflow: visible !important; /* Ensure elements aren't clipped */
+  position: relative !important;
+}
+
+/* Make sure the toast content is properly visible */
+.Toastify__toast-body {
+  padding: 4px 8px !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Ensure the close button is visible and accessible */
+.Toastify__close-button {
+  opacity: 0.8 !important;
+  color: #333 !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 10 !important; /* Higher z-index than content */
+  cursor: pointer !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.1) !important;
+}
+
+.Toastify__close-button > svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Adjust the z-index for the toast portal to ensure it's above everything */
+#toast-portal-root {
+  z-index: 9999;
+  position: relative;
+}
+
+/* Ensure profile warning toast has proper spacing for the close button */
+.profile-warning-toast {
+  padding-right: 30px !important;
+}

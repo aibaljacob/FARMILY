@@ -49,15 +49,8 @@ const Chat = ({ dealId, dealType, onClose }) => {
             setMessages(response.data.messages);
           }
           
-          // Mark messages as read
+          // Start polling for new messages
           if (response.data.id) {
-            await axios.post(`http://127.0.0.1:8000/api/chat/rooms/${response.data.id}/mark-read/`, {}, {
-              headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            });
-            
-            // Start polling for new messages
             startPolling(response.data.id);
           } else {
             console.error('Chat room has no ID');
@@ -97,6 +90,34 @@ const Chat = ({ dealId, dealType, onClose }) => {
       }
     };
   }, [dealId, dealType]);
+  
+  // Mark messages as read after they are loaded and displayed
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!loading && chatRoom && chatRoom.id) {
+        try {
+          const token = localStorage.getItem('access_token');
+          
+          if (!token) {
+            console.error('Cannot mark messages as read: No authentication token found');
+            return;
+          }
+          
+          await axios.post(`http://127.0.0.1:8000/api/chat/rooms/${chatRoom.id}/mark-read/`, {}, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          console.log('Messages marked as read');
+        } catch (error) {
+          console.error('Error marking messages as read:', error);
+        }
+      }
+    };
+    
+    markMessagesAsRead();
+  }, [loading, chatRoom]);
   
   // Scroll to bottom when messages change
   useEffect(() => {

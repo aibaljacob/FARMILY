@@ -146,6 +146,12 @@ class ProductOffer(models.Model):
     delivery_status = models.CharField(max_length=20, default='ready', blank=True, null=True, help_text="Current delivery status if delivery is available")
     break_requested = models.BooleanField(default=False, help_text="Whether a break has been requested for this deal")
     break_requested_by = models.CharField(max_length=10, blank=True, null=True, help_text="Who requested to break the deal (farmer/buyer)")
+    complete_requested = models.BooleanField(default=False, help_text="Whether completion has been requested for this deal")
+    complete_requested_by = models.CharField(max_length=10, blank=True, null=True, help_text="Who requested to complete the deal (farmer/buyer)")
+    # Payment fields
+    is_paid = models.BooleanField(default=False, help_text="Whether payment has been completed for this deal")
+    payment_id = models.CharField(max_length=100, blank=True, null=True, help_text="Payment transaction ID")
+    payment_date = models.DateTimeField(blank=True, null=True, help_text="When payment was completed")
     
     class Meta:
         unique_together = ['product', 'buyer']  # A buyer can only have one active offer per product
@@ -232,6 +238,12 @@ class DemandResponse(models.Model):
     delivery_status = models.CharField(max_length=20, default='ready', blank=True, null=True, help_text="Current delivery status if delivery is available")
     break_requested = models.BooleanField(default=False, help_text="Whether a break has been requested for this deal")
     break_requested_by = models.CharField(max_length=10, blank=True, null=True, help_text="Who requested to break the deal (farmer/buyer)")
+    complete_requested = models.BooleanField(default=False, help_text="Whether completion has been requested for this deal")
+    complete_requested_by = models.CharField(max_length=10, blank=True, null=True, help_text="Who requested to complete the deal (farmer/buyer)")
+    # Payment fields
+    is_paid = models.BooleanField(default=False, help_text="Whether payment has been completed for this deal")
+    payment_id = models.CharField(max_length=100, blank=True, null=True, help_text="Payment transaction ID")
+    payment_date = models.DateTimeField(blank=True, null=True, help_text="When payment was completed")
     
     class Meta:
         unique_together = ['demand', 'farmer']  # A farmer can only have one active response per demand

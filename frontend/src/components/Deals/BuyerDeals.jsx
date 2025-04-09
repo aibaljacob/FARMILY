@@ -18,7 +18,7 @@ import {
   Tooltip,
   Row,
   Col,
-  Alert
+  Alert,
 } from 'antd';
 import { 
   ShoppingOutlined, 
@@ -40,32 +40,41 @@ import {
   CommentOutlined,
   DisconnectOutlined,
   ExclamationCircleOutlined,
-  CloseCircleOutlined
+  CloseCircleOutlined,
+  InfoCircleOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
+import { showSuccessNotification, showErrorNotification } from '../../utils/notificationConfig';
 import './Deals.css';
 import DealInvoice from './DealInvoice';
 import { ChatModal } from '../Chat';
+import RazorpayPayment from '../Payment/RazorpayPayment';
 
 const { Title, Text } = Typography;
 
 const BuyerDeals = () => {
   const [deals, setDeals] = useState([]);
+  const [canceledDeals, setCanceledDeals] = useState([]);
+  const [completedDeals, setCompletedDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedDeal, setSelectedDeal] = useState(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
-  const [farmersData, setFarmersData] = useState({});
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [breakDealModalVisible, setBreakDealModalVisible] = useState(false);
+  const [acceptBreakDealModalVisible, setAcceptBreakDealModalVisible] = useState(false);
+  const [acceptCompleteDealModalVisible, setAcceptCompleteDealModalVisible] = useState(false);
+  const [dealToBreak, setDealToBreak] = useState(null);
+  const [dealToComplete, setDealToComplete] = useState(null);
+  const [selectedChatDeal, setSelectedChatDeal] = useState(null);
+  const [chatModalVisible, setChatModalVisible] = useState(false);
   const [invoiceModalVisible, setInvoiceModalVisible] = useState(false);
   const [dealForInvoice, setDealForInvoice] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [buyerId, setBuyerId] = useState(null);
-  const [chatModalVisible, setChatModalVisible] = useState(false);
-  const [selectedChatDeal, setSelectedChatDeal] = useState(null);
-  const [breakDealModalVisible, setBreakDealModalVisible] = useState(false);
-  const [dealToBreak, setDealToBreak] = useState(null);
-  const [canceledDeals, setCanceledDeals] = useState([]);
+  const [farmersData, setFarmersData] = useState({});
 
   // Category options for mapping category values to display labels
   const categoryOptions = [
@@ -128,6 +137,14 @@ const BuyerDeals = () => {
       });
       
       fetchDeals();
+      
+      // Set up an interval to refresh deals data every 30 seconds
+      const refreshInterval = setInterval(() => {
+        fetchDeals();
+      }, 30000);
+      
+      // Clean up interval on component unmount
+      return () => clearInterval(refreshInterval);
     } else {
       setLoading(false);
       setError('User information not found. Please log in again.');
@@ -178,10 +195,16 @@ const BuyerDeals = () => {
           const demandsMap = await fetchDemands(demand_deals.map(deal => deal.demand), token);
           
           // Combine responses with demand details
-          formattedDemandDeals = demand_deals.map(deal => ({
+          formattedDemandDeals = processDeals(demand_deals).map(deal => ({
             ...deal,
             dealType: 'demand',
-            demandDetails: demandsMap[deal.demand] || null
+            demandDetails: demandsMap[deal.demand] || null,
+            // Check if there's a completion request from the farmer
+            completeRequested: deal.complete_requested || false,
+            completeRequestedBy: deal.complete_requested_by || null,
+            // Add break request properties
+            breakRequested: deal.break_requested || false,
+            breakRequestedBy: deal.break_requested_by || null
           })).filter(deal => deal.demandDetails !== null);
           
           // Fetch farmer details for all demand deals
@@ -191,11 +214,17 @@ const BuyerDeals = () => {
         // Process product deals (buyer's accepted offers on products)
         let formattedProductDeals = [];
         if (product_deals && product_deals.length > 0) {
-          formattedProductDeals = product_deals.map(deal => ({
+          formattedProductDeals = processDeals(product_deals).map(deal => ({
             ...deal,
             dealType: 'product',
             // Ensure can_deliver is set based on the product's can_deliver field
-            can_deliver: deal.product_details?.can_deliver || false
+            can_deliver: deal.product_details?.can_deliver || false,
+            // Check if there's a completion request from the farmer
+            completeRequested: deal.complete_requested || false,
+            completeRequestedBy: deal.complete_requested_by || null,
+            // Add break request properties
+            breakRequested: deal.break_requested || false,
+            breakRequestedBy: deal.break_requested_by || null
           }));
           console.log(formattedProductDeals);
           
@@ -219,6 +248,11 @@ const BuyerDeals = () => {
         allDeals.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         
         console.log('Formatted all deals:', allDeals);
+        // Log break request status for debugging
+        allDeals.forEach(deal => {
+          console.log(`Deal ID: ${deal.id}, Type: ${deal.dealType}, Break Requested: ${deal.breakRequested}, By: ${deal.breakRequestedBy}`);
+        });
+        
         setDeals(allDeals);
       }
       
@@ -226,10 +260,24 @@ const BuyerDeals = () => {
     } catch (error) {
       console.error('Error fetching deals:', error);
       setError('Failed to load deals. Please try again.');
-      message.error('Failed to load deals');
+      showErrorNotification('Failed to load deals');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Process API response to ensure all required properties are set
+  const processDeals = (deals) => {
+    return deals.map(deal => {
+      // Convert snake_case properties to camelCase for consistency
+      return {
+        ...deal,
+        breakRequested: deal.break_requested || false,
+        breakRequestedBy: deal.break_requested_by || null,
+        completeRequested: deal.complete_requested || false,
+        completeRequestedBy: deal.complete_requested_by || null,
+      };
+    });
   };
 
   // Fetch all demands for the deals
@@ -362,12 +410,12 @@ const BuyerDeals = () => {
     setSelectedChatDeal(null);
   };
 
-  // Render the deal actions
-  const renderDealActions = (deal) => {
-    return [
+  // Get card actions for a deal
+  const getCardActions = (deal) => {
+    const actions = [
       <Button 
-        key="details" 
-        type="text" 
+        key="viewDetails" 
+        type="text"
         size="small"
         icon={<FileTextOutlined />}
         onClick={(e) => {
@@ -377,8 +425,12 @@ const BuyerDeals = () => {
       >
         Details
       </Button>,
-      <Button
-        key="chat"
+    ];
+
+    // Add chat button
+    actions.push(
+      <Button 
+        key="chat" 
         type="text"
         size="small"
         icon={<CommentOutlined />}
@@ -388,39 +440,70 @@ const BuyerDeals = () => {
         }}
       >
         Chat
-      </Button>,
-      <Button
-        key="print"
-        type="text"
-        size="small"
-        icon={<PrinterOutlined />}
-        onClick={(e) => {
-          e.stopPropagation();
-          handlePrintInvoice(deal);
-        }}
-      >
-        Invoice
-      </Button>,
-      <Button 
-        key="breakDeal" 
-        type="text"
-        size="small"
-        danger
-        icon={<DisconnectOutlined />}
-        onClick={(e) => {
-          e.stopPropagation();
-          showBreakDealModal(deal);
-        }}
-      >
-        Break
       </Button>
-    ];
+    );
+    
+    // Add break deal button with red dot indicator for farmer's break requests
+    actions.push(
+      <Badge dot={deal.breakRequested && deal.breakRequestedBy === 'farmer'} key="breakDealBadge">
+        <Button 
+          key="breakDeal" 
+          type="text"
+          size="small"
+          danger
+          icon={<DisconnectOutlined />}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("Break deal button clicked for deal:", deal);
+            console.log("Break requested:", deal.breakRequested);
+            console.log("Break requested by:", deal.breakRequestedBy);
+            showBreakDealModal(deal);
+          }}
+        >
+          {deal.breakRequested && deal.breakRequestedBy === 'farmer' ? 'Respond' : 'Break'}
+        </Button>
+      </Badge>
+    );
+    
+    // Add complete deal button with red dot indicator for farmer's completion requests
+    actions.push(
+      <Badge dot={deal.completeRequested && deal.completeRequestedBy === 'farmer'} key="completeDealBadge">
+        <Button 
+          key="completeDeal" 
+          type="text"
+          size="small"
+          icon={<CheckCircleOutlined />}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("Complete deal button clicked for deal:", deal);
+            console.log("Complete requested:", deal.completeRequested);
+            console.log("Complete requested by:", deal.completeRequestedBy);
+            showCompleteDealModal(deal);
+          }}
+        >
+          {deal.completeRequested && deal.completeRequestedBy === 'farmer' ? 'Review' : 'Complete'}
+        </Button>
+      </Badge>
+    );
+
+    return actions;
   };
 
   // Show break deal modal
   const showBreakDealModal = (deal) => {
-    setDealToBreak(deal);
-    setBreakDealModalVisible(true);
+    console.log("showBreakDealModal called with deal:", deal);
+    
+    // If there's a pending break request from the farmer, show the accept/decline modal instead
+    if (deal.breakRequested && deal.breakRequestedBy === 'farmer') {
+      console.log("Deal has break request from farmer, showing accept modal");
+      setDealToBreak(deal);
+      setAcceptBreakDealModalVisible(true);
+    } else {
+      // Otherwise show the regular break deal request modal
+      console.log("No break request, showing request modal");
+      setDealToBreak(deal);
+      setBreakDealModalVisible(true);
+    }
   };
 
   // Handle break deal modal close
@@ -428,6 +511,22 @@ const BuyerDeals = () => {
     setBreakDealModalVisible(false);
     setTimeout(() => {
       setDealToBreak(null);
+    }, 300);
+  };
+  
+  // Handle accept break deal modal close
+  const handleAcceptBreakDealModalClose = () => {
+    setAcceptBreakDealModalVisible(false);
+    setTimeout(() => {
+      setDealToBreak(null);
+    }, 300);
+  };
+
+  // Handle accept complete deal modal close
+  const handleAcceptCompleteDealModalClose = () => {
+    setAcceptCompleteDealModalVisible(false);
+    setTimeout(() => {
+      setDealToComplete(null);
     }, 300);
   };
 
@@ -460,11 +559,7 @@ const BuyerDeals = () => {
       });
 
       if (response.status === 200) {
-        notification.success({
-          message: 'Break Request Sent',
-          description: 'Your request to break the deal has been sent to the farmer. The deal will be broken when they approve.',
-          placement: 'topRight'
-        });
+        showSuccessNotification('Break Request Sent', 'Your request to break the deal has been sent to the farmer. The deal will be broken when they approve.');
         
         // Update the local state to show the deal is pending cancellation
         const updatedDeals = deals.map(d => {
@@ -479,7 +574,7 @@ const BuyerDeals = () => {
       }
     } catch (error) {
       console.error('Error requesting to break deal:', error);
-      message.error('Failed to send break deal request. Please try again.');
+      showErrorNotification('Failed to send break deal request', 'Please try again.');
     }
   };
 
@@ -510,7 +605,7 @@ const BuyerDeals = () => {
       });
 
       if (response.status === 200) {
-        message.success('The deal has been successfully broken.');
+        showSuccessNotification('Deal Broken', 'The deal has been successfully broken.');
         
         // Remove the deal from active deals and add to canceled deals
         const updatedDeals = deals.filter(d => !(d.id === deal.id && d.dealType === deal.dealType));
@@ -521,7 +616,187 @@ const BuyerDeals = () => {
       }
     } catch (error) {
       console.error('Error accepting break deal request:', error);
-      message.error('Failed to accept break deal request. Please try again.');
+      showErrorNotification('Failed to accept break deal request', 'Please try again.');
+    }
+  };
+
+  // Handle declining a break request from farmer
+  const declineBreakDeal = async () => {
+    if (!dealToBreak) return;
+    
+    try {
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      let endpoint = '';
+      
+      if (dealToBreak.dealType === 'product') {
+        // Product deal
+        endpoint = `http://127.0.0.1:8000/api/product-offers/${dealToBreak.id}/`;
+      } else {
+        // Demand deal
+        endpoint = `http://127.0.0.1:8000/api/demand-responses/${dealToBreak.id}/`;
+      }
+
+      // Update the deal in the database to remove the break request flag
+      const response = await axios.put(endpoint, {
+        break_requested: false,
+        break_requested_by: null
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 200) {
+        showSuccessNotification('Break Request Declined', 'You have declined the request to break this deal. The deal remains active.');
+        
+        // Update the local state to remove the break request
+        const updatedDeals = deals.map(d => {
+          if (d.id === dealToBreak.id && d.dealType === dealToBreak.dealType) {
+            return { ...d, breakRequested: false, breakRequestedBy: null };
+          }
+          return d;
+        });
+        
+        setDeals(updatedDeals);
+        handleAcceptBreakDealModalClose();
+      }
+    } catch (error) {
+      console.error('Error declining break deal request:', error);
+      showErrorNotification('Action Failed', 'Failed to decline break deal request. Please try again.');
+    }
+  };
+
+  // Handle declining a completion request
+  const declineCompleteDeal = async () => {
+    if (!dealToComplete) return;
+    
+    try {
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      let endpoint = '';
+      
+      if (dealToComplete.dealType === 'product') {
+        // Product deal
+        endpoint = `http://127.0.0.1:8000/api/product-offers/${dealToComplete.id}/`;
+      } else {
+        // Demand deal
+        endpoint = `http://127.0.0.1:8000/api/demand-responses/${dealToComplete.id}/`;
+      }
+
+      // Update the deal in the database to remove the completion request flag
+      const response = await axios.put(endpoint, {
+        complete_requested: false,
+        complete_requested_by: null
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 200) {
+        showSuccessNotification('Completion Request Declined', 'You have declined the request to mark this deal as complete. The deal remains in progress.');
+        
+        // Update the local state to remove the completion request
+        const updatedDeals = deals.map(d => {
+          if (d.id === dealToComplete.id && d.dealType === dealToComplete.dealType) {
+            return { ...d, completeRequested: false, completeRequestedBy: null };
+          }
+          return d;
+        });
+        
+        setDeals(updatedDeals);
+        handleAcceptCompleteDealModalClose();
+      }
+    } catch (error) {
+      console.error('Error declining completion request:', error);
+      showErrorNotification('Action Failed', 'Failed to decline completion request. Please try again.');
+    }
+  };
+
+  // Handle payment success
+  const handlePaymentSuccess = (dealId) => {
+    console.log('Payment successful for deal ID:', dealId);
+    // Refresh the deals data to show updated payment status
+    fetchDeals();
+    
+    // Show success message
+    showSuccessNotification('Payment Completed', 'Payment completed successfully!');
+  };
+
+  // Show complete deal modal
+  const showCompleteDealModal = (deal) => {
+    console.log("showCompleteDealModal called with deal:", deal);
+    
+    // If there's a pending completion request from the farmer, show the accept/decline modal instead
+    if (deal.completeRequested && deal.completeRequestedBy === 'farmer') {
+      console.log("Deal has completion request from farmer, showing accept modal");
+      setDealToComplete(deal);
+      setAcceptCompleteDealModalVisible(true);
+    } else {
+      // Otherwise show a message that only farmers can request completion
+      showErrorNotification('Completion Requests', 'Only farmers can request to mark a deal as complete. Please wait for the farmer to initiate this action.');
+    }
+  };
+
+  // Handle complete deal modal close
+  const handleCompleteDealModalClose = () => {
+    setCompleteDealModalVisible(false);
+    // Clear the selected deal after a short delay to prevent UI flicker
+    setTimeout(() => {
+      setDealToComplete(null);
+    }, 300);
+  };
+
+  // Accept completion request from farmer
+  const acceptCompleteDeal = async (deal) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      let endpoint = '';
+      
+      if (deal.dealType === 'product') {
+        // Product deal
+        endpoint = `http://127.0.0.1:8000/api/product-offers/${deal.id}/accept-complete/`;
+      } else {
+        // Demand deal
+        endpoint = `http://127.0.0.1:8000/api/demand-responses/${deal.id}/accept-complete/`;
+      }
+
+      const response = await axios.post(endpoint, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 200) {
+        showSuccessNotification('Deal Completed', 'The deal has been successfully marked as complete.');
+        
+        // Remove the deal from active deals and add to completed deals
+        const updatedDeals = deals.filter(d => !(d.id === deal.id && d.dealType === deal.dealType));
+        setDeals(updatedDeals);
+        
+        // Add to completed deals
+        setCompletedDeals([...completedDeals, {...deal, completedAt: new Date().toISOString()}]);
+      }
+    } catch (error) {
+      console.error('Error accepting completion request:', error);
+      showErrorNotification('Action Failed', 'Failed to accept completion request. Please try again.');
     }
   };
 
@@ -555,7 +830,7 @@ const BuyerDeals = () => {
         </div>
       </div>
 
-      {deals.length === 0 && canceledDeals.length === 0 ? (
+      {deals.length === 0 && canceledDeals.length === 0 && completedDeals.length === 0 ? (
         <Empty 
           description={
             <span>
@@ -567,37 +842,6 @@ const BuyerDeals = () => {
         />
       ) : (
         <>
-          {/* Break Request Notifications */}
-          {deals.filter(deal => deal.breakRequested && deal.breakRequestedBy === 'farmer').length > 0 && (
-            <Alert
-              message="Break Deal Requests"
-              description={
-                <div>
-                  <p>You have pending break deal requests from farmers:</p>
-                  <ul>
-                    {deals.filter(deal => deal.breakRequested && deal.breakRequestedBy === 'farmer').map(deal => (
-                      <li key={`${deal.dealType}-${deal.id}-break-request`}>
-                        {deal.dealType === 'demand' 
-                          ? `Demand deal for ${getCategoryLabel(deal.demandDetails?.category || 'others')}`
-                          : `Product deal for ${deal.product_details?.name}`
-                        } - 
-                        <Button 
-                          type="link" 
-                          onClick={() => acceptBreakDeal(deal)}
-                        >
-                          Accept Break Request
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              }
-              type="warning"
-              showIcon
-              style={{ marginBottom: '24px' }}
-            />
-          )}
-
           {/* Hosted Deals Section - Deals where the buyer created the demand */}
           <div className="deals-section">
             <Title level={4} style={{ marginTop: 24, marginBottom: 16 }}>
@@ -639,13 +883,12 @@ const BuyerDeals = () => {
                   console.log(deal);
                   return (
                     <List.Item 
-                      key={`${deal.dealType}-${deal.id}`} 
-                      onClick={() => showDealDetails(deal)}
+                      key={`${deal.dealType}-${deal.id}`}
                     >
                       <Card 
                         className="deal-card"
                         hoverable
-                        actions={renderDealActions(deal)}
+                        actions={getCardActions(deal)}
                       >
                         <div className="deal-card-header" style={{ 
                           backgroundColor: categoryColors[category] || '#2d6a4f',
@@ -725,6 +968,25 @@ const BuyerDeals = () => {
                                 <ShoppingOutlined style={{ color: '#8c8c8c', marginRight: '5px' }} /> Quantity:
                               </Text>
                               <Text strong>{quantity} {unit}</Text>
+                            </div>
+                            
+                            <div className="deal-stat" style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}>
+                              <Text type="secondary" style={{ fontSize: '14px' }}>
+                                <DollarOutlined style={{ color: '#8c8c8c', marginRight: '5px' }} /> Payment:
+                              </Text>
+                              {deal.is_paid ? (
+                                <Tag icon={<CheckCircleOutlined />} color="success">
+                                  Payment Completed
+                                </Tag>
+                              ) : (
+                                <Tag icon={<CloseCircleOutlined />} color="warning">
+                                  Payment Required
+                                </Tag>
+                              )}
                             </div>
                             
                             {/* Display delivery status */}
@@ -797,6 +1059,26 @@ const BuyerDeals = () => {
                               </div>
                             )}
                           </div>
+                          
+                          {!deal.is_paid && (
+                            <div className="deal-actions" style={{ marginTop: '16px' }}>
+                              <RazorpayPayment 
+                                dealAmount={deal.final_price || deal.offered_price}
+                                dealId={deal.id}
+                                farmerName={getFarmerDetails(deal.farmer).name}
+                                onPaymentSuccess={() => handlePaymentSuccess(deal.id)}
+                                dealType="demand"
+                              />
+                            </div>
+                          )}
+
+                          {deal.is_paid && (
+                            <div className="payment-status" style={{ marginTop: '16px' }}>
+                              <Tag icon={<CheckCircleOutlined />} color="success" style={{ padding: '5px 10px', fontSize: '14px' }}>
+                                Payment Completed
+                              </Tag>
+                            </div>
+                          )}
                         </div>
                       </Card>
                     </List.Item>
@@ -848,13 +1130,12 @@ const BuyerDeals = () => {
 
                   return (
                     <List.Item 
-                      key={`${deal.dealType}-${deal.id}`} 
-                      onClick={() => showDealDetails(deal)}
+                      key={`${deal.dealType}-${deal.id}`}
                     >
                       <Card 
                         className="deal-card"
                         hoverable
-                        actions={renderDealActions(deal)}
+                        actions={getCardActions(deal)}
                       >
                         <div className="deal-card-header" style={{ 
                           backgroundColor: categoryColors[category] || '#2d6a4f',
@@ -936,6 +1217,25 @@ const BuyerDeals = () => {
                               <Text strong>{quantity} {unit}</Text>
                             </div>
                             
+                            <div className="deal-stat" style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}>
+                              <Text type="secondary" style={{ fontSize: '14px' }}>
+                                <DollarOutlined style={{ color: '#8c8c8c', marginRight: '5px' }} /> Payment:
+                              </Text>
+                              {deal.is_paid ? (
+                                <Tag icon={<CheckCircleOutlined />} color="success">
+                                  Payment Completed
+                                </Tag>
+                              ) : (
+                                <Tag icon={<CloseCircleOutlined />} color="warning">
+                                  Payment Required
+                                </Tag>
+                              )}
+                            </div>
+                            
                             {/* Display delivery status */}
                             <div className="deal-stat" style={{
                               display: 'flex',
@@ -990,6 +1290,26 @@ const BuyerDeals = () => {
                               }}>{formatPrice(totalValue)}</Text>
                             </div>
                           </div>
+                          
+                          {!deal.is_paid && (
+                            <div className="deal-actions" style={{ marginTop: '16px' }}>
+                              <RazorpayPayment 
+                                dealAmount={deal.final_price || deal.offered_price}
+                                dealId={deal.id}
+                                farmerName={getFarmerDetails(deal.product_details?.farmer_id).name}
+                                onPaymentSuccess={() => handlePaymentSuccess(deal.id)}
+                                dealType="product"
+                              />
+                            </div>
+                          )}
+
+                          {deal.is_paid && (
+                            <div className="payment-status" style={{ marginTop: '16px' }}>
+                              <Tag icon={<CheckCircleOutlined />} color="success" style={{ padding: '5px 10px', fontSize: '14px' }}>
+                                Payment Completed
+                              </Tag>
+                            </div>
+                          )}
                         </div>
                       </Card>
                     </List.Item>
@@ -1098,6 +1418,106 @@ const BuyerDeals = () => {
               />
             </div>
           )}
+          
+          {/* Completed Deals Section */}
+          {completedDeals.length > 0 && (
+            <div className="deals-section">
+              <Title level={4} style={{ marginTop: 32, marginBottom: 16 }}>
+                <CheckCircleOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
+                Completed Deals
+              </Title>
+              
+              <List
+                grid={{ 
+                  gutter: [24, 24], 
+                  xs: 1, 
+                  sm: 1, 
+                  md: 2, 
+                  lg: 3, 
+                  xl: 3,
+                  xxl: 4
+                }}
+                dataSource={completedDeals}
+                renderItem={deal => {
+                  // Get category based on deal type
+                  const category = deal.dealType === 'demand' 
+                    ? deal.demandDetails?.category || 'others'
+                    : deal.product_details?.category || 'others';
+                  
+                  // Get farmer info
+                  const farmerInfo = getFarmerDetails(
+                    deal.dealType === 'demand' 
+                      ? deal.farmer
+                      : deal.product_details?.farmer_id
+                  );
+
+                  return (
+                    <List.Item key={`completed-${deal.dealType}-${deal.id}`}>
+                      <Card 
+                        className="deal-card completed-deal"
+                        style={{ opacity: 0.7 }}
+                      >
+                        <div className="deal-card-header" style={{ 
+                          backgroundColor: '#f5f5f5',
+                          padding: '12px 16px',
+                          borderRadius: '4px 4px 0 0'
+                        }}>
+                          <Tag color={categoryColors[category] || '#2d6a4f'} className="deal-category">
+                            {getCategoryLabel(category)}
+                          </Tag>
+                          <Tag color="success" style={{ marginLeft: '8px' }}>
+                            <CheckCircleOutlined /> Completed
+                          </Tag>
+                        </div>
+                        
+                        <div className="deal-content" style={{ padding: '16px' }}>
+                          <div className="deal-date" style={{ 
+                            marginBottom: '16px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}>
+                            <CalendarOutlined style={{ marginRight: 8, color: '#8c8c8c' }} />
+                            <Text type="secondary" style={{ fontSize: '13px' }}>
+                              Completed on: {formatDate(deal.completedAt)}
+                            </Text>
+                          </div>
+                          
+                          <div className="deal-card-farmer" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '16px',
+                            backgroundColor: '#f9f9f9',
+                            padding: '12px',
+                            borderRadius: '4px',
+                            border: '1px solid #f0f0f0'
+                          }}>
+                            <Avatar 
+                              size={45} 
+                              src={`http://127.0.0.1:8000/${farmerInfo?.profileImage}`}
+                              icon={<UserOutlined />}
+                              style={{ 
+                                backgroundColor: !farmerInfo?.profileImage ? '#2d6a4f' : undefined,
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                              }}
+                            />
+                            <div className="farmer-info" style={{ marginLeft: '12px', flex: 1, overflow: 'hidden' }}>
+                              <Text strong style={{ fontSize: '15px', display: 'block', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {farmerInfo?.name || 'Unknown Farmer'}
+                              </Text>
+                            </div>
+                          </div>
+                          
+                          <Text type="secondary">
+                            This deal has been successfully completed.
+                          </Text>
+                        </div>
+                      </Card>
+                    </List.Item>
+                  );
+                }}
+              />
+            </div>
+          )}
         </>
       )}
       
@@ -1148,7 +1568,7 @@ const BuyerDeals = () => {
                         {getCategoryLabel(selectedDeal.dealType === 'demand' ? selectedDeal.demandDetails?.category || 'others' : selectedDeal.product_details?.category || 'others')}
                       </Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Status">
+                    {/* <Descriptions.Item label="Status">
                       <Tag color={
                         selectedDeal.status === 'accepted' ? 'green' :
                         selectedDeal.status === 'pending' ? 'orange' :
@@ -1158,7 +1578,7 @@ const BuyerDeals = () => {
                       }>
                         {selectedDeal.status.charAt(0).toUpperCase() + selectedDeal.status.slice(1)}
                       </Tag>
-                    </Descriptions.Item>
+                    </Descriptions.Item> */}
                     <Descriptions.Item label="Date Created">
                       {formatDate(selectedDeal.created_at)}
                     </Descriptions.Item>
@@ -1175,6 +1595,17 @@ const BuyerDeals = () => {
                           : (parseFloat(selectedDeal.price) * parseFloat(selectedDeal.quantity))
                         ).toFixed(2)}
                       </Text>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Payment Status">
+                      {selectedDeal.is_paid ? (
+                        <Tag icon={<CheckCircleOutlined />} color="success">
+                          Payment Completed
+                        </Tag>
+                      ) : (
+                        <Tag icon={<CloseCircleOutlined />} color="warning">
+                          Payment Required
+                        </Tag>
+                      )}
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
@@ -1225,12 +1656,13 @@ const BuyerDeals = () => {
                         Generate Invoice
                       </Button>
                       
-                      {!selectedDeal.breakRequested && (
+                      {selectedDeal && !selectedDeal.breakRequested && (
                         <Button 
                           type="danger" 
                           icon={<DisconnectOutlined />} 
                           block
                           onClick={() => {
+                            console.log("Request to break deal button clicked");
                             setDealToBreak(selectedDeal);
                             setBreakDealModalVisible(true);
                             setDetailsModalVisible(false);
@@ -1240,27 +1672,44 @@ const BuyerDeals = () => {
                         </Button>
                       )}
                       
-                      {selectedDeal.breakRequested && selectedDeal.breakRequestedBy === 'farmer' && (
+                      {selectedDeal && selectedDeal.breakRequested && selectedDeal.breakRequestedBy === 'farmer' && (
                         <Button 
                           type="danger" 
                           icon={<DisconnectOutlined />} 
                           block
                           onClick={() => {
-                            acceptBreakDeal(selectedDeal);
+                            console.log("Respond to break request button clicked");
+                            console.log("Selected deal:", selectedDeal);
+                            setDealToBreak(selectedDeal);
+                            setAcceptBreakDealModalVisible(true);
                             setDetailsModalVisible(false);
                           }}
                         >
-                          Accept Break Request
+                          Respond to Break Request
                         </Button>
                       )}
                       
-                      {selectedDeal.breakRequested && selectedDeal.breakRequestedBy === 'buyer' && (
+                      {selectedDeal && selectedDeal.breakRequested && selectedDeal.breakRequestedBy === 'buyer' && (
                         <Button 
                           disabled 
                           block
                           icon={<ClockCircleOutlined />}
                         >
                           Break Request Pending
+                        </Button>
+                      )}
+                      
+                      {selectedDeal.completeRequested && selectedDeal.completeRequestedBy === 'farmer' && (
+                        <Button 
+                          type="primary" 
+                          icon={<CheckCircleOutlined />} 
+                          block
+                          onClick={() => {
+                            acceptCompleteDeal(selectedDeal);
+                            setDetailsModalVisible(false);
+                          }}
+                        >
+                          Accept Completion Request
                         </Button>
                       )}
                     </Space>
@@ -1448,7 +1897,155 @@ const BuyerDeals = () => {
             </div>
             
             <Text>
-              Are you sure you want to request to break this deal? This will send a notification to the farmer. The deal will only be broken if they accept your request.
+              Are you sure you want to request to break this deal? This will send a notification to the farmer. The deal will only be broken if they approve.
+            </Text>
+          </div>
+        )}
+      </Modal>
+      
+      {/* Accept Break Deal Modal */}
+      <Modal
+        title={
+          <Space>
+            <DisconnectOutlined style={{ color: '#ff4d4f' }} />
+            <span>Break Deal Request</span>
+          </Space>
+        }
+        visible={acceptBreakDealModalVisible}
+        onCancel={handleAcceptBreakDealModalClose}
+        footer={[
+          <Button 
+            key="decline" 
+            onClick={declineBreakDeal}
+          >
+            Decline Request
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            danger
+            onClick={() => {
+              if (dealToBreak) {
+                acceptBreakDeal(dealToBreak);
+                handleAcceptBreakDealModalClose();
+              }
+            }}
+          >
+            Accept Break Request
+          </Button>
+        ]}
+        width={500}
+      >
+        {dealToBreak && (
+          <div className="break-deal-modal">
+            <div className="warning-icon" style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <ExclamationCircleOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />
+            </div>
+            
+            <Alert
+              message="Farmer Requested to Break Deal"
+              description="The farmer has requested to break this deal. If you accept, the deal will be canceled and moved to your canceled deals section."
+              type="warning"
+              showIcon
+              style={{ marginBottom: '20px' }}
+            />
+            
+            <div className="deal-summary" style={{ marginBottom: '20px' }}>
+              <Title level={5}>Deal Summary</Title>
+              <Descriptions bordered column={1} size="small">
+                <Descriptions.Item label="Deal Type">
+                  {dealToBreak.dealType === 'demand' ? 'Demand Response' : 'Product Offer'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Product">
+                  <Tag color={categoryColors[dealToBreak.dealType === 'demand' ? dealToBreak.demandDetails?.category || 'others' : dealToBreak.product_details?.category || 'others']}>
+                    {getCategoryLabel(dealToBreak.dealType === 'demand' ? dealToBreak.demandDetails?.category || 'others' : dealToBreak.product_details?.category || 'others')}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="Farmer">
+                  {getFarmerDetails(dealToBreak.dealType === 'demand' ? dealToBreak.farmer : dealToBreak.product_details?.farmer_id).name}
+                </Descriptions.Item>
+                <Descriptions.Item label="Deal Date">
+                  {formatDate(dealToBreak.created_at)}
+                </Descriptions.Item>
+              </Descriptions>
+            </div>
+            
+            <Text>
+              Are you sure you want to accept the break request for this deal?
+            </Text>
+          </div>
+        )}
+      </Modal>
+      
+      {/* Accept Complete Deal Modal */}
+      <Modal
+        title={
+          <Space>
+            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+            <span>Complete Deal Request</span>
+          </Space>
+        }
+        visible={acceptCompleteDealModalVisible}
+        onCancel={handleAcceptCompleteDealModalClose}
+        footer={[
+          <Button 
+            key="decline" 
+            onClick={declineCompleteDeal}
+          >
+            Decline Request
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => {
+              if (dealToComplete) {
+                acceptCompleteDeal(dealToComplete);
+                handleAcceptCompleteDealModalClose();
+              }
+            }}
+          >
+            Accept Completion Request
+          </Button>
+        ]}
+        width={500}
+      >
+        {dealToComplete && (
+          <div className="complete-deal-modal">
+            <div className="success-icon" style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <CheckCircleOutlined style={{ fontSize: '48px', color: '#52c41a' }} />
+            </div>
+            
+            <Alert
+              message="Farmer Requested to Complete Deal"
+              description="The farmer has requested to mark this deal as complete. If you accept, the deal will be moved to your completed deals section."
+              type="success"
+              showIcon
+              style={{ marginBottom: '20px' }}
+            />
+            
+            <div className="deal-summary" style={{ marginBottom: '20px' }}>
+              <Title level={5}>Deal Summary</Title>
+              <Descriptions bordered column={1} size="small">
+                <Descriptions.Item label="Deal Type">
+                  {dealToComplete.dealType === 'demand' ? 'Demand Response' : 'Product Offer'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Product">
+                  <Tag color={categoryColors[dealToComplete.dealType === 'demand' ? dealToComplete.demandDetails?.category || 'others' : dealToComplete.product_details?.category || 'others']}>
+                    {getCategoryLabel(dealToComplete.dealType === 'demand' ? dealToComplete.demandDetails?.category || 'others' : dealToComplete.product_details?.category || 'others')}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="Farmer">
+                  {getFarmerDetails(dealToComplete.dealType === 'demand' ? dealToComplete.farmer : dealToComplete.product_details?.farmer_id).name}
+                </Descriptions.Item>
+                <Descriptions.Item label="Deal Date">
+                  {formatDate(dealToComplete.created_at)}
+                </Descriptions.Item>
+              </Descriptions>
+            </div>
+            
+            <Text>
+              Are you satisfied with this deal and ready to mark it as complete?
             </Text>
           </div>
         )}

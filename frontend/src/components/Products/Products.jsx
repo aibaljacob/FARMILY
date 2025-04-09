@@ -15,7 +15,6 @@ import {
   Empty,
   List,
   Spin,
-  message,
   Pagination,
   Switch,
   Divider,
@@ -40,6 +39,7 @@ import {
 import axios from 'axios';
 import './Products.css';
 import { OffersModal } from '../Offers';
+import { showSuccessNotification, showErrorNotification } from '../../utils/notificationConfig';
 
 const { Title, Text } = Typography;
 
@@ -317,11 +317,11 @@ const Products = () => {
       if (editingProduct) {
         // Update existing product
         await axios.put(`http://127.0.0.1:8000/api/products/${editingProduct.id}/`, data, { headers });
-        message.success('Product updated successfully');
+        showSuccessNotification('Product Updated', 'Your product has been updated successfully');
       } else {
         // Add new product
         await axios.post('http://127.0.0.1:8000/api/products/', data, { headers });
-        message.success('Product added successfully');
+        showSuccessNotification('Product Added', 'Your product has been added successfully');
       }
       
       // Refresh products list
@@ -357,7 +357,7 @@ const Products = () => {
         }
       }
       
-      message.error(errorMessage);
+      showErrorNotification('Save Failed', errorMessage);
     } finally {
       setFormSubmitting(false);
     }
@@ -377,12 +377,12 @@ const Products = () => {
         }
       });
       
-      message.success('Product deleted successfully');
+      showSuccessNotification('Product Deleted', 'Your product has been deleted successfully');
       fetchProducts(); // Refresh the list after deletion
     } catch (error) {
       console.error("Error deleting product:", error);
       const errorMessage = error.response?.data?.detail || "Failed to delete product. Please try again.";
-      message.error(errorMessage);
+      showErrorNotification('Delete Failed', errorMessage);
     }
   };
 

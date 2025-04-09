@@ -229,17 +229,17 @@ const NearbyBuyers = () => {
                 hoverable 
                 bordered 
                 className="buyer-card"
-                actions={[
-                  <Tooltip title="View Profile">
-                    <UserOutlined key="profile" />
-                  </Tooltip>,
-                  <Tooltip title="View Location">
-                    <EnvironmentOutlined key="location" />
-                  </Tooltip>,
-                  <Tooltip title="View Stats">
-                    <AreaChartOutlined key="stats" />
-                  </Tooltip>
-                ]}
+                // actions={[
+                //   <Tooltip title="View Profile">
+                //     <UserOutlined key="profile" />
+                //   </Tooltip>,
+                //   <Tooltip title="View Location">
+                //     <EnvironmentOutlined key="location" />
+                //   </Tooltip>,
+                //   <Tooltip title="View Stats">
+                //     <AreaChartOutlined key="stats" />
+                //   </Tooltip>
+                // ]}
               >
                 <Card.Meta
                   avatar={

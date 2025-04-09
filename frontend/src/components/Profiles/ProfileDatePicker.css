@@ -1,0 +1,73 @@
+/* Custom styles for the DatePicker to match the modern UI design */
+
+.ant-picker {
+  border-radius: 8px !important;
+  height: 40px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-picker:hover {
+  border-color: #40a9ff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09) !important;
+}
+
+.ant-picker-focused {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+.ant-picker-input > input {
+  font-size: 14px !important;
+  color: #333 !important;
+}
+
+.ant-picker-suffix {
+  color: #999 !important;
+}
+
+.ant-picker-suffix:hover {
+  color: #1890ff !important;
+}
+
+/* Calendar panel styling */
+.ant-picker-panel {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: linear-gradient(135deg, #1890ff, #096dd9) !important;
+}
+
+/* Error state styling */
+.has-error .ant-picker {
+  border-color: #ff4d4f !important;
+}
+
+/* Make date picker match the phone input styling */
+.date-picker-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.date-picker-prefix {
+  margin-right: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  background-color: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-right: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.date-picker-with-prefix {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}

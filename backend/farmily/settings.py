@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'corsheaders',
     'chat',
+    'payment',  # Add payment app
+    'deals',    # Add deals app
     
     # django-allauth apps
     'allauth',
@@ -251,3 +253,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = 'rzp_test_QWzUeBlDdGFSH0'
+RAZORPAY_KEY_SECRET = 'wXOxUom8zbtR29KYY4Ys7hYf'

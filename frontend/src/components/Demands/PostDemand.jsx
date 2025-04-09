@@ -8,7 +8,6 @@ import {
   Switch, 
   Button, 
   InputNumber, 
-  message,
   Typography,
   Space,
   Divider,
@@ -38,6 +37,7 @@ import axios from 'axios';
 import './Demands.css';
 import moment from 'moment';
 import ResponsesModal from './ResponsesModal';
+import { showSuccessNotification, showErrorNotification } from '../../utils/notificationConfig';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -274,7 +274,7 @@ const DemandManagement = () => {
       console.error("Error fetching demands:", error);
       const errorMessage = error.response?.data?.detail || "Failed to load demands. Please try again later.";
       setError(errorMessage);
-      message.error(errorMessage);
+      showErrorNotification('Load Failed', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -354,12 +354,12 @@ const DemandManagement = () => {
         }
       });
       
-      message.success('Demand deleted successfully');
+      showSuccessNotification('Demand Deleted', 'Your demand has been deleted successfully');
       fetchDemands(); // Refresh the list after deletion
     } catch (error) {
       console.error("Error deleting demand:", error);
       const errorMessage = error.response?.data?.detail || "Failed to delete demand. Please try again.";
-      message.error(errorMessage);
+      showErrorNotification('Delete Failed', errorMessage);
     }
   };
 
@@ -390,7 +390,7 @@ const DemandManagement = () => {
             'Content-Type': 'application/json'
           } 
         });
-        message.success('Demand updated successfully');
+        showSuccessNotification('Demand Updated', 'Your demand has been updated successfully');
       } else {
         // Add new demand
         await axios.post('http://127.0.0.1:8000/api/demands/', demandData, { 
@@ -399,7 +399,7 @@ const DemandManagement = () => {
             'Content-Type': 'application/json'
           } 
         });
-        message.success('Demand posted successfully');
+        showSuccessNotification('Demand Posted', 'Your demand has been posted successfully');
       }
       
       // Refresh demands list
@@ -413,13 +413,14 @@ const DemandManagement = () => {
       
       if (error.response) {
         console.error('Error response:', error.response.data);
-        message.error(error.response.data.detail || 
-                    Object.entries(error.response.data)
-                      .map(([key, value]) => `${key}: ${value}`)
-                      .join(', ') || 
-                    'Failed to submit demand');
+        const errorMessage = error.response.data.detail || 
+                  Object.entries(error.response.data)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(', ') || 
+                  'Failed to submit demand';
+        showErrorNotification('Submission Failed', errorMessage);
       } else {
-        message.error('Network error or server unreachable');
+        showErrorNotification('Network Error', 'Network error or server unreachable');
       }
     } finally {
       setFormSubmitting(false);

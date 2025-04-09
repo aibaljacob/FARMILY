@@ -92,6 +92,12 @@ urlpatterns = [
     path('api/demand-responses/<int:pk>/request-break/', views.request_break_demand_response, name='request-break-demand-response'),
     path('api/demand-responses/<int:pk>/accept-break/', views.accept_break_demand_response, name='accept-break-demand-response'),
     
+    # Complete deal endpoints
+    path('api/product-offers/<int:pk>/request-complete/', views.request_complete_product_offer, name='request-complete-product-offer'),
+    path('api/product-offers/<int:pk>/accept-complete/', views.accept_complete_product_offer, name='accept-complete-product-offer'),
+    path('api/demand-responses/<int:pk>/request-complete/', views.request_complete_demand_response, name='request-complete-demand-response'),
+    path('api/demand-responses/<int:pk>/accept-complete/', views.accept_complete_demand_response, name='accept-complete-demand-response'),
+    
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Google OAuth endpoints

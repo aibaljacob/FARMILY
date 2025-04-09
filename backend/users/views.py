@@ -810,6 +810,22 @@ def product_offer_detail(request, pk):
         # Store the old status for notification check
         old_status = offer.status
         
+        # Check if the status is being changed to 'accepted'
+        if 'status' in request.data and request.data['status'] == 'accepted':
+            product = offer.product
+            
+            # Check if there are any existing accepted offers for this product
+            existing_accepted_offers = ProductOffer.objects.filter(
+                product=product,
+                status='accepted'
+            ).exclude(id=offer.id).exists()
+            
+            if existing_accepted_offers:
+                return Response(
+                    {"detail": "Cannot accept this offer. You already have an accepted offer for this product."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
         # Buyers can update offered price, quantity, and notes, but not status
         if request.user.role == 2:
             allowed_fields = ['offered_price', 'quantity', 'notes']
@@ -1275,7 +1291,6 @@ def remove_favorite_product(request, product_id):
     favorite.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 # Favorite Demand views
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -1327,7 +1342,6 @@ def remove_favorite_demand(request, demand_id):
     favorite.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_favorite_product(request, product_id):
@@ -1336,7 +1350,6 @@ def check_favorite_product(request, product_id):
     """
     is_favorite = FavoriteProduct.objects.filter(user=request.user, product_id=product_id).exists()
     return Response({"is_favorite": is_favorite})
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -1350,7 +1363,7 @@ def check_favorite_demand(request, demand_id):
 # Farmer Rating views
 @api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
-def farmer_ratings(request):
+def farmer_ratings(request,farmer_id):
     """
     POST: Create a new rating for a farmer
     GET: List all ratings (admin only)
@@ -1410,6 +1423,7 @@ def farmer_ratings_detail(request, farmer_id):
         'average_rating': avg_rating,
         'ratings_count': ratings.count(),
         'ratings': serializer.data
+        
     }
     
     return Response(response_data)
@@ -1971,7 +1985,7 @@ def request_break_product_offer(request, pk):
         product_offer.save()
         
         # Create notification for the other party
-        recipient = product_offer.buyer if is_farmer else product_offer.product.farmer
+        recipient = product_offer.buyer if is_farmer else User.objects.get(id=product_offer.product.farmer.id)
         sender = user
         message = f"{'Farmer' if is_farmer else 'Buyer'} has requested to break the deal for {product_offer.product.name}"
         
@@ -2194,6 +2208,287 @@ def accept_break_demand_response(request, pk):
         
         return Response(
             {"detail": "Deal has been canceled successfully."},
+            status=status.HTTP_200_OK
+        )
+    
+    except DemandResponse.DoesNotExist:
+        return Response(
+            {"detail": "Demand response not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def request_complete_product_offer(request, pk):
+    """
+    Request to mark a product offer deal as complete.
+    Only the farmer who owns the product or the buyer who made the offer can request to complete the deal.
+    """
+    try:
+        product_offer = ProductOffer.objects.get(pk=pk)
+        
+        # Check if the deal is in a state that can be completed (accepted)
+        if product_offer.status != 'accepted':
+            return Response(
+                {"detail": "Only accepted deals can be marked as complete."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if the user is either the farmer or the buyer
+        user = request.user
+        is_farmer = user.id == product_offer.product.farmer.id
+        is_buyer = user.id == product_offer.buyer.id
+        
+        if not (is_farmer or is_buyer):
+            return Response(
+                {"detail": "You don't have permission to complete this deal."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Set complete request fields
+        product_offer.complete_requested = True
+        product_offer.complete_requested_by = 'farmer' if is_farmer else 'buyer'
+        product_offer.save()
+        
+        try:
+            # Create notification for the other party
+            recipient = product_offer.buyer if is_farmer else User.objects.get(id=product_offer.product.farmer.id)
+            sender = user
+            message = f"{'Farmer' if is_farmer else 'Buyer'} has requested to mark the deal for {product_offer.product.name} as complete"
+            
+            create_notification(
+                recipient=recipient,
+                message=message,
+                notification_type='complete_request',
+                sender=sender,
+                product_id=product_offer.product.id,
+                offer_id=product_offer.id,
+                redirect_url="/deals"
+            )
+        except Exception as notification_error:
+            # Log the notification error but don't fail the whole request
+            print(f"Error creating notification: {str(notification_error)}")
+            # Continue with the response
+        
+        return Response(
+            {"detail": "Completion request sent successfully."},
+            status=status.HTTP_200_OK
+        )
+    
+    except ProductOffer.DoesNotExist:
+        return Response(
+            {"detail": "Product offer not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_complete_product_offer(request, pk):
+    """
+    Accept a request to mark a product offer deal as complete.
+    Only the party who did not initiate the completion request can accept it.
+    """
+    try:
+        product_offer = ProductOffer.objects.get(pk=pk)
+        
+        # Check if there is a completion request
+        if not product_offer.complete_requested:
+            return Response(
+                {"detail": "No completion request found for this deal."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if the user is the correct party to accept the completion
+        user = request.user
+        is_farmer = user.id == product_offer.product.farmer.id
+        is_buyer = user.id == product_offer.buyer.id
+        
+        if not (is_farmer or is_buyer):
+            return Response(
+                {"detail": "You don't have permission to accept this completion request."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Check if the user is the party who should accept the completion
+        if (is_farmer and product_offer.complete_requested_by == 'farmer') or \
+           (is_buyer and product_offer.complete_requested_by == 'buyer'):
+            return Response(
+                {"detail": "You cannot accept your own completion request."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update the deal status to completed
+        product_offer.status = 'completed'
+        product_offer.save()
+        
+        # Create notification for the other party
+        recipient = product_offer.buyer if is_farmer else product_offer.product.farmer
+        sender = user
+        message = f"Your request to mark the deal for {product_offer.product.name} as complete has been accepted."
+        
+        create_notification(
+            recipient=recipient,
+            message=message,
+            notification_type='deal_completed',
+            sender=sender,
+            product_id=product_offer.product.id,
+            offer_id=product_offer.id,
+            redirect_url="/deals"
+        )
+        
+        return Response(
+            {"detail": "Deal has been marked as complete successfully."},
+            status=status.HTTP_200_OK
+        )
+    
+    except ProductOffer.DoesNotExist:
+        return Response(
+            {"detail": "Product offer not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def request_complete_demand_response(request, pk):
+    """
+    Request to mark a demand response deal as complete.
+    Only the farmer who responded to the demand or the buyer who created the demand can request to complete the deal.
+    """
+    try:
+        demand_response = DemandResponse.objects.get(pk=pk)
+        
+        # Check if the deal is in a state that can be completed (accepted)
+        if demand_response.status != 'accepted':
+            return Response(
+                {"detail": "Only accepted deals can be marked as complete."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if the user is either the farmer or the buyer
+        user = request.user
+        is_farmer = user.id == demand_response.farmer.id
+        is_buyer = hasattr(demand_response.demand, 'buyer') and user.id == demand_response.demand.buyer.id
+        
+        if not (is_farmer or is_buyer):
+            return Response(
+                {"detail": "You don't have permission to complete this deal."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Set complete request fields
+        demand_response.complete_requested = True
+        demand_response.complete_requested_by = 'farmer' if is_farmer else 'buyer'
+        demand_response.save()
+        
+        try:
+            # Create notification for the other party
+            recipient = demand_response.demand.buyer if is_farmer else demand_response.farmer
+            sender = user
+            message = f"{'Farmer' if is_farmer else 'Buyer'} has requested to mark the deal for {demand_response.demand.title} as complete"
+            
+            create_notification(
+                recipient=recipient,
+                message=message,
+                notification_type='complete_request',
+                sender=sender,
+                demand_id=demand_response.demand.id,
+                response_id=demand_response.id,
+                redirect_url="/deals"
+            )
+        except Exception as notification_error:
+            # Log the notification error but don't fail the whole request
+            print(f"Error creating notification: {str(notification_error)}")
+            # Continue with the response
+        
+        return Response(
+            {"detail": "Completion request sent successfully."},
+            status=status.HTTP_200_OK
+        )
+    
+    except DemandResponse.DoesNotExist:
+        return Response(
+            {"detail": "Demand response not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        print(f"Error in request_complete_demand_response: {str(e)}")
+        return Response(
+            {"detail": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_complete_demand_response(request, pk):
+    """
+    Accept a request to mark a demand response deal as complete.
+    Only the party who did not initiate the completion request can accept it.
+    """
+    try:
+        demand_response = DemandResponse.objects.get(pk=pk)
+        
+        # Check if there is a completion request
+        if not demand_response.complete_requested:
+            return Response(
+                {"detail": "No completion request found for this deal."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if the user is the correct party to accept the completion
+        user = request.user
+        is_farmer = user.id == demand_response.farmer.id
+        is_buyer = user.id == demand_response.demand.buyer.id
+        
+        if not (is_farmer or is_buyer):
+            return Response(
+                {"detail": "You don't have permission to accept this completion request."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Check if the user is the party who should accept the completion
+        if (is_farmer and demand_response.complete_requested_by == 'farmer') or \
+           (is_buyer and demand_response.complete_requested_by == 'buyer'):
+            return Response(
+                {"detail": "You cannot accept your own completion request."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update the deal status to completed
+        demand_response.status = 'completed'
+        demand_response.save()
+        
+        # Create notification for the other party
+        recipient = demand_response.demand.buyer if is_farmer else demand_response.farmer
+        sender = user
+        message = f"Your request to mark the deal for {demand_response.demand.title} as complete has been accepted."
+        
+        create_notification(
+            recipient=recipient,
+            message=message,
+            notification_type='deal_completed',
+            sender=sender,
+            demand_id=demand_response.demand.id,
+            response_id=demand_response.id,
+            redirect_url="/deals"
+        )
+        
+        return Response(
+            {"detail": "Deal has been marked as complete successfully."},
             status=status.HTTP_200_OK
         )
     

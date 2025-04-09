@@ -374,6 +374,60 @@ export const RegisterPage = () => {
   
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Handle Google login success
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setGoogleLoading(true);
+      
+      // Decode the credential to get user info
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log("Google user info:", decoded);
+      
+      // Send the token to your backend
+      const response = await axios.post('http://127.0.0.1:8000/api/auth/google/', {
+        token: credentialResponse.credential
+      });
+      
+      // Check if this is a new user
+      if (response.data.is_new_user) {
+        // Navigate to role selection page with user data
+        navigate('/google/role-selection', {
+          state: {
+            userData: response.data
+          }
+        });
+      } else {
+        // Existing user - store tokens and redirect
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        toast.success("Login successful!");
+        
+        // Redirect based on user role
+        if (response.data.user.role === 1) {
+          window.location.href = '/farmer';
+        } else if (response.data.user.role === 2) {
+          window.location.href = '/buyer-dashboard'; 
+        } else {
+          window.location.href = '/admin-dashboard'; 
+        }
+      }
+    } catch (error) {
+      console.error("Google login error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.error || "Failed to authenticate with Google. Please try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  // Handle Google login error
+  const handleGoogleError = () => {
+    toast.error("Google sign-in was unsuccessful. Please try again.");
+    setGoogleLoading(false);
+  };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
@@ -649,6 +703,24 @@ export const RegisterPage = () => {
 
               <button type="submit" className="farmily-auth-button">Create Account</button>
             </form>
+            
+            <div className="farmily-auth-divider">
+              <span>OR</span>
+            </div>
+            
+            <div className="google-signin-container">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap
+                theme="filled_blue"
+                text="continue_with"
+                shape="pill"
+                locale="en"
+                logo_alignment="center"
+                width="100%"
+              />
+            </div>
 
             <div className="farmily-auth-footer">
               <div className="farmily-auth-divider">

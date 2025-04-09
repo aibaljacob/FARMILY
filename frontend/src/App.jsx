@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import routes from './routes';
 import LandingPage from './pages/Landing/LandingPage';
@@ -15,8 +15,14 @@ import 'antd/dist/antd.css'; // Ant Design default style
 import ForgotPassword from './pages/Login/ForgotPassword';
 import ResetPassword from './pages/Login/ResetPassword';
 import RoleSelection from './pages/GoogleAuth/RoleSelection';
+import { configureNotifications } from './utils/notificationConfig';
 
 const App = () => {
+  // Configure notifications when the app initializes
+  useEffect(() => {
+    configureNotifications();
+  }, []);
+
   return (
     <Routes>
       <Route path={routes.landing} element={<LandingPage />} />

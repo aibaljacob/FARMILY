@@ -1,0 +1,54 @@
+/* Custom styles for profile warning toast notifications */
+
+.profile-warning-toast {
+  background: linear-gradient(to right, rgba(255, 248, 230, 0.95), rgba(255, 243, 224, 0.95)) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 8px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+  border-left: 4px solid #f5a623 !important;
+  padding: 16px !important;
+  max-width: 400px !important;
+  width: 100% !important;
+}
+
+.profile-incomplete-toast {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-incomplete-toast h4 {
+  margin: 0 0 10px 0;
+  color: #d48806;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.profile-incomplete-toast p {
+  margin: 0 0 10px 0;
+  color: #5c5c5c;
+  font-size: 14px;
+}
+
+.profile-incomplete-toast .missing-fields-list {
+  margin-top: 8px;
+  padding-left: 8px;
+  color: #d46b08;
+  font-size: 14px;
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+/* Animation for the toast */
+.Toastify__toast--warning {
+  animation: toast-slide-in 0.5s ease forwards !important;
+}
+
+@keyframes toast-slide-in {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

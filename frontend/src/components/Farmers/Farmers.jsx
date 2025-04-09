@@ -338,7 +338,8 @@ const Farmers = () => {
             ...normalizedFarmer,
             proximity: proximity,
             location: farmerLocation,
-            products_count: 0 // Initialize products_count to 0, will be updated when product data is fetched
+            products_count: 0, // Initialize products_count to 0, will be updated when product data is fetched
+            reviews: [] // Initialize reviews to empty array
           };
         });
 
@@ -346,12 +347,13 @@ const Farmers = () => {
         setFilteredFarmers(processedFarmers);
         setUsingSampleData(false);
         
-        // Fetch product counts for each farmer
+        // Fetch product counts and reviews for each farmer
         processedFarmers.forEach(async (farmer) => {
           try {
             const farmerId = farmer.user || farmer.id;
             if (!farmerId) return;
             
+            // Fetch products count
             const productResponse = await axios.get(
               `http://127.0.0.1:8000/api/farmers/${farmerId}/products/`,
               {
@@ -361,25 +363,41 @@ const Farmers = () => {
               }
             );
             
-            if (productResponse.data) {
-              // Update the farmer with the product count
-              setFarmers(prevFarmers => 
-                prevFarmers.map(f => 
-                  (f.id === farmer.id || f.user === farmer.user) ? 
-                  { ...f, products_count: productResponse.data.length } : f
-                )
-              );
-              
-              // Also update filtered farmers
-              setFilteredFarmers(prevFarmers => 
-                prevFarmers.map(f => 
-                  (f.id === farmer.id || f.user === farmer.user) ? 
-                  { ...f, products_count: productResponse.data.length } : f
-                )
-              );
-            }
+            // Fetch reviews for the farmer
+            const reviewsResponse = await axios.get(
+              `http://127.0.0.1:8000/api/farmers/${farmerId}/ratings`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              }
+            );
+            
+            // Update the farmer with product count and reviews
+            setFarmers(prevFarmers => 
+              prevFarmers.map(f => 
+                (f.id === farmer.id || f.user === farmer.user) ? 
+                { 
+                  ...f, 
+                  products_count: productResponse.data?.length || 0,
+                  reviews: reviewsResponse.data?.ratings || []
+                } : f
+              )
+            );
+            
+            // Also update filtered farmers
+            setFilteredFarmers(prevFarmers => 
+              prevFarmers.map(f => 
+                (f.id === farmer.id || f.user === farmer.user) ? 
+                { 
+                  ...f, 
+                  products_count: productResponse.data?.length || 0,
+                  reviews: reviewsResponse.data?.ratings || []
+                } : f
+              )
+            );
           } catch (error) {
-            console.error(`Error fetching products for farmer ${farmer.id}:`, error);
+            console.error(`Error fetching products and reviews for farmer ${farmer.id}:`, error);
           }
         });
       } else {
@@ -522,7 +540,7 @@ const Farmers = () => {
   const showRatingModal = (farmer) => {
     setCurrentFarmer(farmer);
     // Try to fetch existing reviews for this farmer
-    fetchFarmerReviews(farmer.user);
+    fetchFarmerReviews(currentFarmer.user);
     setIsRatingModalVisible(true);
   };
 
@@ -550,7 +568,7 @@ const Farmers = () => {
         throw new Error('Authentication token not found');
       }
       // Submit the rating and review to the backend
-      await axios.post('http://127.0.0.1:8000/api/farmer-ratings/', {
+      await axios.post(`http://127.0.0.1:8000/api/farmers/${currentFarmer.user}/ratings/`, {
         farmer_id: currentFarmer.user,
         rating: userRating,
         review: userReview
@@ -564,6 +582,7 @@ const Farmers = () => {
       
       // Refresh the farmer reviews
       fetchFarmerReviews(currentFarmer.user);
+      console.log("bahahahahah",currentFarmer.user)
       
       // Refresh the farmers list to update the ratings
       fetchFarmers();
@@ -616,7 +635,7 @@ const Farmers = () => {
 
       // Fetch reviews from the backend
       // Updated endpoint to match the backend structure
-      const response = await axios.get(`http://127.0.0.1:8000/api/ratings/farmer/${farmerId}/`, {
+      const response = await axios.get(`http://127.0.0.1:8000/api/farmers/${farmerId}/ratings`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -626,7 +645,7 @@ const Farmers = () => {
         setFarmerReviews({
           ...farmerReviews,
           [farmerId]: response.data.ratings
-        });console.log(farmerReviews);
+        });console.log("asdfhbafhsdf",farmerReviews);
       }
     } catch (error) {
       console.error("Error fetching farmer reviews:", error);

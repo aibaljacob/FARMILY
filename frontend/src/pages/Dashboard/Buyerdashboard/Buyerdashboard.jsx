@@ -18,6 +18,10 @@ import { Button } from 'antd';
 import DemandManagement from '../../../components/Demands/PostDemand';
 import Farmers from '../../../components/Farmers/Farmers';
 import WarningNotification from '../../../components/Warnings/WarningNotification';
+import { showProfileIncompleteWarning } from '../../../components/Profiles/ProfileIncompleteAlert';
+import '../../../components/Profiles/ProfileToastStyles.css';
+import CustomToastContainer from '../../../components/Toast/CustomToastContainer';
+import '../../../components/Toast/CustomToastContainer.css';
 
 // Import icons
 import { 
@@ -41,31 +45,67 @@ const BuyerDashboard = () => {
   const pfp=profile?profile.profilepic:null;
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const [userDetails, setUserDetails] = useState(null);
+  const [profileComplete, setProfileComplete] = useState(false);
+  const [profileData, setProfileData] = useState(null);
   const user = JSON.parse(localStorage.getItem('user'));
   const username = user ? `${user.first_name} ${user.last_name}` : "Guest";
 
   const handleNavigation = (page) => {
-    switch(page) {
-      case '1':
-        setActiveSection('dashboard');
-        break;
-      case '2':
-        setActiveSection('products');
-        break;
-      case '3':
-        setActiveSection('post-demand');
-        break;
-      case '4':
-        setActiveSection('deals');
-        break;
-      case '5':
-        setActiveSection('farmers');
-        break;
-      case '6':
-        setActiveSection('profile');
-        break;
-      default:
-        setActiveSection('dashboard');
+    // Map page numbers to section names
+    const pageToSection = {
+      '1': 'dashboard',
+      '2': 'products',
+      '3': 'post-demand',
+      '4': 'deals',
+      '5': 'farmers',
+      '6': 'profile'
+    };
+    
+    const section = pageToSection[page] || 'dashboard';
+    
+    // If profile is not complete, only allow navigation to the profile page
+    if (!profileComplete && page !== '6') {
+      // Show the profile incomplete warning
+      showProfileIncompleteWarning(profileData);
+      setActiveSection('profile');
+      return;
+    }
+    
+    setActiveSection(section);
+  };
+
+  const checkProfileCompletion = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const profileResponse = await axios.get('http://127.0.0.1:8000/api/buyer-profile/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      // Get profile data
+      const profileData = profileResponse.data;
+      setProfileData(profileData);
+      
+      // Check if all required fields are filled
+      const requiredFields = ['bio', 'phoneno', 'dob', 'address', 'city', 'state', 'country', 'pincode'];
+      const isProfileComplete = requiredFields.every(field => 
+        profileData[field] && profileData[field].toString().trim() !== ''
+      );
+      
+      setProfileComplete(isProfileComplete);
+      
+      return isProfileComplete;
+    } catch (error) {
+      console.error("Error checking profile completion:", error);
+      return false;
+    }
+  };
+
+  const handleProfileUpdateSuccess = async () => {
+    const isComplete = await checkProfileCompletion();
+    if (isComplete) {
+      toast.success('Profile complete! You now have access to all features.');
     }
   };
 
@@ -79,6 +119,41 @@ const BuyerDashboard = () => {
           },
         });
         setUserDetails(response.data);
+        
+        // Check if buyer profile exists and is complete
+        try {
+          const profileResponse = await axios.get('http://127.0.0.1:8000/api/buyer-profile/', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          
+          // Get profile data
+          const profileData = profileResponse.data;
+          setProfileData(profileData);
+          
+          // Check if all required fields are filled
+          const requiredFields = ['bio', 'phoneno', 'dob', 'address', 'city', 'state', 'country', 'pincode'];
+          const isProfileComplete = requiredFields.every(field => 
+            profileData[field] && profileData[field].toString().trim() !== ''
+          );
+          
+          setProfileComplete(isProfileComplete);
+          
+          // If profile is incomplete, redirect to profile page and show warning
+          if (!isProfileComplete) {
+            console.log("Buyer profile incomplete, redirecting to profile page");
+            setActiveSection('profile');
+            // Show the profile incomplete warning
+            showProfileIncompleteWarning(profileData);
+          }
+        } catch (error) {
+          console.log("No buyer profile found, redirecting to profile page");
+          setProfileComplete(false);
+          setActiveSection('profile');
+          // Show the profile incomplete warning
+          showProfileIncompleteWarning(profileData);
+        }
       } catch (error) {
         console.error(error);
         toast.error('Failed to load user details. Please log in again.');
@@ -105,7 +180,15 @@ const BuyerDashboard = () => {
       case 'farmers':
         return <Farmers />;
       case 'profile':
-        return <ProfileManager firstName={user?.first_name} lastName={user?.last_name} userid={user?.id}/>;
+        return (
+          <ProfileManager 
+            firstName={user?.first_name} 
+            lastName={user?.last_name} 
+            userid={user?.id} 
+            role={user?.role}
+            onProfileUpdateSuccess={handleProfileUpdateSuccess}
+          />
+        );
       default:
         return <Overview />;
     }
@@ -113,9 +196,9 @@ const BuyerDashboard = () => {
 
   return (
     <div className="dashboard-layout">
-      <Header userName={username} onNavigate={handleNavigation} pfp={pfp} />
-      
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout className="site-layout">
+        <Header userName={username} onNavigate={handleNavigation} pfp={pfp} />
+        
         <Sider
           className="sidebar"
           width={280}
@@ -152,19 +235,44 @@ const BuyerDashboard = () => {
               marginTop: '100px'
             }}
           >
-            <Menu.Item key="1" icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('1')}>
+            <Menu.Item 
+              key="1" 
+              icon={<DashboardOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('1')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Dashboard</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShoppingOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('2')}>
+            <Menu.Item 
+              key="2" 
+              icon={<ShoppingOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('2')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Products</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<PlusOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('3')}>
+            <Menu.Item 
+              key="3" 
+              icon={<PlusOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('3')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Post Demand</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<HistoryOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('4')}>
-              <Link to="#">Deals History</Link>
+            <Menu.Item 
+              key="4" 
+              icon={<HistoryOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('4')}
+              disabled={!profileComplete}
+            >
+              <Link to="#">Deals</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('5')}>
+            <Menu.Item 
+              key="5" 
+              icon={<TeamOutlined style={{ color: '#2d6a4f' }} />} 
+              onClick={() => handleNavigation('5')}
+              disabled={!profileComplete}
+            >
               <Link to="#">Farmers</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UserOutlined style={{ color: '#2d6a4f' }} />} onClick={() => handleNavigation('6')}>
@@ -181,9 +289,12 @@ const BuyerDashboard = () => {
             <div className="filler"></div>
             {/* Warning notification component */}
             <WarningNotification />
+            
             {renderContent()}
           </div>
         </Layout>
+        {/* Custom toast container with adjusted positioning */}
+        <CustomToastContainer />
       </Layout>
     </div>
   );

@@ -249,28 +249,9 @@ const ResponsesModal = ({ visible, demandId, onClose, demandDetails, onDealCreat
           <div>
             <p>You've successfully accepted an offer from {farmerDetails.name}.</p>
             <p>A new deal has been created and the demand is now fulfilled.</p>
-            <Space>
-              <Button 
-                type="primary" 
-                icon={<FileTextOutlined />}
-                onClick={() => {
-                  navigate('/buyer/deals');
-                  onClose();
-                }}
-              >
-                View My Deals
-              </Button>
-              <Button
-                type="default"
-                icon={<PrinterOutlined />}
-                onClick={() => setShowInvoice(true)}
-              >
-                Generate Invoice
-              </Button>
-            </Space>
           </div>
         ),
-        duration: 0, // Make notification stay until user closes it
+        duration: 5, // Make notification stay until user closes it
       });
       
       // Callback to parent component if provided
